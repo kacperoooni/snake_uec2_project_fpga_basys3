@@ -54,7 +54,8 @@ module rect_controller(
 	RESET = 3,
 	GAME_OVER = 4,
 	SNAKE_DRAWING = 5,
-	COLLISION_CHECK = 6;
+	COLLISION_CHECK = 6,
+	SNACK_GENERATE = 7;
    
    localparam //states
 	UP = 4'b0010,
@@ -83,6 +84,8 @@ module rect_controller(
    reg [3:0] key_latch, key_latch_nxt;
    reg [4:0] snake_size, snake_size_nxt;
    reg [31:0] previous_read_rect;
+   reg [4:0] snack_gen_reg_x;
+   reg [4:0] snack_gen_reg_y;
    
    
    
@@ -195,7 +198,7 @@ module rect_controller(
 				SNAKE_GROW:
 					begin
 						snake_size_nxt = snake_size + 5'd1;
-						state_nxt = SNAKE_DRAWING;
+						state_nxt = SNACK_GENERATE;
 						snake_writer_iterator_nxt = 0;
 					end	
 				GAME_OVER:	
@@ -203,8 +206,17 @@ module rect_controller(
 						if(rst) state_nxt = INIT;
 						else state_nxt = GAME_OVER;
 					end
-				//SNACK_GENERATE:		
-				//TODO		
+				SNACK_GENERATE:
+					begin
+						state_nxt = SNAKE_DRAWING;
+						for(i = 0; i <= 31; i=i+1)
+								{snack_gen_reg_x,snack_gen_reg_y} = snake_register[i] + {snack_gen_reg_x,snack_gen_reg_y};
+						rect_write_nxt[24:20] = snack_gen_reg_x;
+						rect_write_nxt[8:4] = snack_gen_reg_y;
+						rect_write_nxt[3:0] = SNACK;
+						//TODO snack on snake checking
+					end	
+				
 			endcase
 			
 		
