@@ -28,11 +28,14 @@ module MAIN(
     output wire [3:0] b,
     output wire vsync,
     output wire hsync,
-	input wire [3:0] key,
+	//	input wire [3:0] key,
+		input wire rx,
+		output wire tx,
 		//debug
 	input wire [4:0] sw,
 	output wire [6:0] sseg,
-	output wire [3:0] an
+	output wire [3:0] an,
+	output wire [7:0] led
     );
     wire clk_100Mhz, clk_65Mhz;
     
@@ -89,6 +92,7 @@ module MAIN(
     wire hsync_grid_register_grid_edges,vsync_grid_register_grid_edges;
     wire [11:0] rgb_grid_register_grid_edges;
     wire [15:0] vcount_grid_register_grid_edges,hcount_grid_register_grid_edges;
+    wire [7:0] word_uart_to_keyboard, key;
     
     grid_register grid_register (
        .clk(clk_65Mhz),
@@ -116,6 +120,7 @@ module MAIN(
 	     .rst(rst),
 	     .rect_read_in(rect_read_function_wire),
 	   //debug
+	     .keyboard_debug(word_uart_to_keyboard),
 	     .debug_keys(sw),
 	     .sseg(sseg),
 	     .an(an)
@@ -132,6 +137,24 @@ module MAIN(
     .vsync_in(vsync_grid_register_grid_edges),
     .vsync_out(vsync),
     .hsync_out(hsync)	
+    );
+    
+   
+    //baud 9600
+    uart uart (
+    .clk(clk_65Mhz),
+    .reset(rst),
+    .rx(rx),
+    .tx(tx),
+    .word(word_uart_to_keyboard),
+    .led(led)
+    );
+    
+    keyboard_driver keyboard_driver (
+    .clk(clk_65Mhz),
+    .rst(rst),
+    .word_in(word_uart_to_keyboard),
+    .key(key)
     );   
        
                  

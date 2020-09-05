@@ -25,7 +25,7 @@ module rect_controller(
     output reg [35:0] rect_write,
     input wire [3:0] rect_read_in,
     input wire clk,
-		input wire [3:0] key,
+		input wire [7:0] key,
 		input wire rst,
 		
 		
@@ -33,7 +33,8 @@ module rect_controller(
 	//DEBUG
 		output reg [3:0] an,  // enable 1-out-of-4 asserted low
     output reg [6:0] sseg, // led segments
-		input wire [4:0] debug_keys
+		input wire [4:0] debug_keys,
+		input wire [7:0] keyboard_debug
 	
 	
     );
@@ -48,23 +49,28 @@ module rect_controller(
       SNACK = 4'b0100;
    
    localparam //states
-	INIT = 5'd0,
-	SNAKE_MOVING = 5'd1,
-	SNAKE_GROW = 5'd2,
-	RESET = 5'd3,
-	GAME_OVER = 5'd4,
-	SNAKE_DRAWING = 5'd5,
-	COLLISION_READ = 5'd6,
-	COLLISION_CHECK = 5'd7,
-	SNACK_GENERATE = 5'd8,
-	SNACK_CHECK_READ = 5'd9,
-	SNACK_CHECK_WRITE = 5'd10;
+		INIT = 5'd0,
+		SNAKE_MOVING = 5'd1,
+		SNAKE_GROW = 5'd2,
+		RESET = 5'd3,
+		GAME_OVER = 5'd4,
+		SNAKE_DRAWING = 5'd5,
+		COLLISION_READ = 5'd6,
+		COLLISION_CHECK = 5'd7,
+		SNACK_GENERATE = 5'd8,
+		SNACK_CHECK_READ = 5'd9,
+		SNACK_CHECK_WRITE = 5'd10;
    
-   localparam //states
-	UP = 4'b0010,
-	DOWN = 4'b0001,
-	LEFT = 4'b0100,
-	RIGHT = 4'b1000;
+   localparam //keys
+    UP = 8'h38,
+    DOWN = 8'h32,
+    LEFT = 8'h34,
+    RIGHT = 8'h36,
+    UP_RIGHT = 8'h39,
+    UP_LEFT = 8'h37,
+    DOWN_RIGHT = 8'h33,
+    DOWN_LEFT = 8'h31,
+    MIDDLE = 8'h35;
 	
 	
 	
@@ -111,14 +117,6 @@ module rect_controller(
 				begin
 					snake_register_nxt[i] = snake_register[i];
 				end
-			if(key == 0)
-				begin
-					key_latch_nxt = key_latch;
-				end
-			else
-				begin
-					key_latch_nxt = key;
-				end	
 
 			
 			case(state)
@@ -148,8 +146,8 @@ module rect_controller(
 								begin
 									snake_register_nxt[i+1] = snake_register[i]; //shift snake stack
 								end
-							case(key_latch)
-								UP:
+							case(key)
+								DOWN:
 									begin
 										snake_register_nxt[0] = {snake_register[0][31:16],snake_register[0][15:0]+16'd1};
 									end	
@@ -161,10 +159,27 @@ module rect_controller(
 									begin
 										snake_register_nxt[0] = {snake_register[0][31:16]+16'd1,snake_register[0][15:0]};
 									end			
-								DOWN:
+								UP:
 									begin
 										snake_register_nxt[0] = {snake_register[0][31:16],snake_register[0][15:0]-16'd1};
 									end
+								DOWN_RIGHT:
+									begin
+										snake_register_nxt[0] = {snake_register[0][31:16]+16'd1,snake_register[0][15:0]+16'd1};
+									end
+								DOWN_LEFT:
+									begin
+										snake_register_nxt[0] = {snake_register[0][31:16]-16'd1,snake_register[0][15:0]+16'd1};
+									end
+								UP_RIGHT:
+									begin
+										snake_register_nxt[0] = {snake_register[0][31:16]+16'd1,snake_register[0][15:0]-16'd1};
+									end
+								UP_LEFT:
+									begin
+										snake_register_nxt[0] = {snake_register[0][31:16]-16'd1,snake_register[0][15:0]-16'd1};
+									end					
+								default: begin end	
 								//TO DO DIAGONALS
 							endcase	
 					end	
@@ -288,7 +303,7 @@ genvar X;
 	
 	
 	
-     //DEBUG
+     //DEBUG DISPLAY
 	reg [3:0] hex3, hex2, hex1, hex0;  // hex digits
     wire [3:0] dp_in;             // 4 decimal points
 	wire [31:0] rx;
@@ -316,10 +331,15 @@ genvar X;
 			end			
 		else if(debug_keys == 5'b11101)	
 			begin
-				{hex3, hex2, hex1, hex0} = snake_speed/1000000; //SNACK GENERATION DEBUG
-			end		
+				{hex3, hex2, hex1, hex0} = snake_speed/1000000; //SNAKE SPEED
+			end
+		else if(debug_keys == 5'b11000)	
+			begin
+				{hex3, hex2, hex1, hex0} = {8'b0, keyboard_debug}; //UART READ
+			end			
 		else		
-	 	{hex3, hex2, hex1, hex0} = {rx[23:16],rx[7:0]};
+	// 	{hex3, hex2, hex1, hex0} = {rx[23:16],rx[7:0]};
+			{hex3, hex2, hex1, hex0} = 16'hFFFF;
 	end
 
    // constant declaration
