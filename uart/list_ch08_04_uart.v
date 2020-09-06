@@ -29,7 +29,7 @@ module uart
    
    reg rd_uart, rd_uart_nxt;
    wire [7:0] r_data;
-   reg [7:0] word, word_nxt;
+   reg [7:0] word_nxt;
    
 
    //body
@@ -64,6 +64,11 @@ module uart
         word_nxt = r_data;
         rd_uart_nxt = 1;
         end
+    else if(reset)
+    		begin
+    		word_nxt = 0;
+    		rd_uart_nxt = 0;
+    		end   
     else
         begin
         word_nxt = word;

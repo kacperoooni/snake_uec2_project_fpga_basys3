@@ -93,6 +93,7 @@ module MAIN(
     wire [11:0] rgb_grid_register_grid_edges;
     wire [15:0] vcount_grid_register_grid_edges,hcount_grid_register_grid_edges;
     wire [7:0] word_uart_to_keyboard, key;
+    wire turbo_button;
     
     grid_register grid_register (
        .clk(clk_65Mhz),
@@ -119,6 +120,7 @@ module MAIN(
        .rect_read_out(rect_read),
 	     .rst(rst),
 	     .rect_read_in(rect_read_function_wire),
+	     .turbo_button(turbo_button),
 	   //debug
 	     .keyboard_debug(word_uart_to_keyboard),
 	     .debug_keys(sw),
@@ -155,7 +157,8 @@ module MAIN(
     .rst(rst),
     .word_in(word_uart_to_keyboard),
     .key(key)
-    )   
+    .turbo_button(turbo_button)
+    );   
        
                  
 endmodule

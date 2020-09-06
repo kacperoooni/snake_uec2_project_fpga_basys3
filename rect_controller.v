@@ -27,6 +27,7 @@ module rect_controller(
     input wire clk,
 		input wire [7:0] key,
 		input wire rst,
+		input wire turbo_button,
 		
 		
 	
@@ -73,6 +74,10 @@ module rect_controller(
     MIDDLE = 8'h35;
 	
 	
+	localparam 
+	SNAKE_REG_SIZE = 127,//+1
+	DIFFICULTY = 2,
+	SNAKE_TURBO = 10000000; 
 	
    
    reg [31:0] rect_read_out_nxt;
@@ -80,18 +85,17 @@ module rect_controller(
    reg [4:0]  state;
    reg [4:0]  state_nxt;
    reg [35:0] rect_write_nxt;
-   reg [31:0] snake_register [31:0];
-   reg [31:0] snake_register_nxt [31:0];
+   reg [31:0] snake_register [SNAKE_REG_SIZE:0];
+   reg [31:0] snake_register_nxt [SNAKE_REG_SIZE:0];
    
    reg [31:0] i; //intertor for smth
-   reg [4:0] snake_writer_iterator, snake_writer_iterator_nxt; //interator for writing snake rects
+   reg [15:0] snake_writer_iterator, snake_writer_iterator_nxt; //interator for writing snake rects
    reg [31:0] snake_moving_iterator,snake_moving_iterator_nxt; //interator for moving period of snake
    
    
-   reg [15:0] snake_x,snake_y;
-  // {snake_x,snake_y} = snake_register[0];
+
    reg [3:0] key_latch, key_latch_nxt;
-   reg [4:0] snake_size, snake_size_nxt;
+   reg [15:0] snake_size, snake_size_nxt;
    reg [31:0] previous_read_rect;
    reg [4:0] snack_gen_reg_y, snack_gen_reg_y_nxt, snack_gen_reg_x, snack_gen_reg_x_nxt;
    reg [31:0] snake_speed, snake_speed_nxt;
@@ -113,7 +117,7 @@ module rect_controller(
 			snack_gen_reg_x_nxt = snack_gen_reg_x;
 			rect_read_out_nxt = rect_read_out;
 			snake_speed_nxt = snake_speed;
-			for(i = 0; i <= 31; i=i+1)
+			for(i = 0; i <= SNAKE_REG_SIZE; i=i+1)
 				begin
 					snake_register_nxt[i] = snake_register[i];
 				end
@@ -122,7 +126,7 @@ module rect_controller(
 			case(state)
 				INIT:
 					begin
-						for(i = 0; i <= 31; i=i+1)
+						for(i = 0; i <= SNAKE_REG_SIZE; i=i+1)
 							begin
 								snake_register_nxt[i] = 0;
 							end
@@ -142,7 +146,7 @@ module rect_controller(
 					begin
 						state_nxt = COLLISION_READ;	
 						snake_moving_iterator_nxt = 0;
-							for(i = 0; i < 31; i=i+1)
+							for(i = 0; i < SNAKE_REG_SIZE; i=i+1)
 								begin
 									snake_register_nxt[i+1] = snake_register[i]; //shift snake stack
 								end
@@ -186,19 +190,20 @@ module rect_controller(
 						
 					SNAKE_DRAWING:
 						begin
-							if(snake_moving_iterator == snake_speed)	state_nxt = SNAKE_MOVING;
+							if (turbo_button == 1 && snake_moving_iterator == SNAKE_TURBO) state_nxt = SNAKE_MOVING;
+							else if(snake_moving_iterator == snake_speed)	state_nxt = SNAKE_MOVING;
 							else state_nxt = SNAKE_DRAWING; 	
 							
 							if(snake_register[snake_writer_iterator] != 0)
 								rect_write_nxt = {snake_register[snake_writer_iterator], SNAKE};
-						  if(snake_writer_iterator == snake_size+5'd1)
+						  if(snake_writer_iterator == snake_size+16'd1)
 								begin
 									rect_write_nxt = {snake_register[snake_writer_iterator], NULL};
 									snake_register_nxt[snake_writer_iterator] = 0;
 								end	
 			
-							if(snake_writer_iterator == 5'd31) snake_writer_iterator_nxt = 0;
-							else snake_writer_iterator_nxt = snake_writer_iterator + 5'd1;	
+							if(snake_writer_iterator == SNAKE_REG_SIZE) snake_writer_iterator_nxt = 0;
+							else snake_writer_iterator_nxt = snake_writer_iterator + 16'd1;	
 						end
 				
 				COLLISION_READ:
@@ -226,8 +231,8 @@ module rect_controller(
 						snake_size_nxt = snake_size + 5'd1;
 						state_nxt = SNACK_GENERATE;
 						snake_writer_iterator_nxt = 0;
-						if (snake_speed <= 10000000) snake_speed_nxt = snake_speed;
-						else 	snake_speed_nxt = snake_speed - 1000000; 
+						if (snake_speed <= 20000000/DIFFICULTY) snake_speed_nxt = snake_speed;
+						else 	snake_speed_nxt = snake_speed - DIFFICULTY*1000000; 
 					end	
 					
 				GAME_OVER:	
@@ -239,7 +244,7 @@ module rect_controller(
 				SNACK_GENERATE:
 					begin
 						state_nxt = SNACK_CHECK_READ;
-						for(i = 0; i <= 31; i=i+1)
+						for(i = 0; i <= SNAKE_REG_SIZE; i=i+1)
 								{snack_gen_reg_x_nxt,snack_gen_reg_y_nxt} ={snack_gen_reg_x_nxt+snake_register[i][4:0],snack_gen_reg_y_nxt+snake_register[i][20:16]} ;
 					end	
 					
@@ -291,7 +296,7 @@ module rect_controller(
 genvar X;		
 	generate
 			begin
-			for (X = 0; X < 32; X = X+1)		
+			for (X = 0; X < SNAKE_REG_SIZE; X = X+1)		
 				begin
 					always@(posedge clk)
 						begin
@@ -336,7 +341,11 @@ genvar X;
 		else if(debug_keys == 5'b11000)	
 			begin
 				{hex3, hex2, hex1, hex0} = {8'b0, keyboard_debug}; //UART READ
-			end			
+			end
+		else if(debug_keys == 5'b11001)	
+			begin
+				{hex3, hex2, hex1, hex0} = {snake_size}; //SNAKE_SIZE
+			end					
 		else		
 	// 	{hex3, hex2, hex1, hex0} = {rx[23:16],rx[7:0]};
 			{hex3, hex2, hex1, hex0} = 16'hFFFF;
