@@ -25,6 +25,8 @@ module grid_edges(
 	input wire [11:0] rgb_in,
 	input wire [15:0] vcount_in,hcount_in,
 	input wire vsync_in,hsync_in,
+	
+	output reg [15:0] vcount_out,hcount_out,
 	output reg hsync_out,vsync_out,
 	output reg [11:0] rgb_out
 	
@@ -60,6 +62,8 @@ always@(posedge clk)
 		rgb_out <= rgb_nxt;
 		vsync_out <= vsync_in;
 		hsync_out <= hsync_in;
+		vcount_out <= vcount_in;
+		hcount_out <= hcount_in;
 	end	
 	
 endmodule	

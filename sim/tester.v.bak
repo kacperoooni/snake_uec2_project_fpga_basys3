@@ -25,7 +25,8 @@ module tester;
     .r(r),
     .g(g),
     .b(b),
-		.rst(rst_sim)
+		.rst(rst_sim),
+		.key(key)
   );
 
   // Instantiate the tiff_writer module.

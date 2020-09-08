@@ -95,6 +95,13 @@ module MAIN(
     wire [7:0] word_uart_to_keyboard, key;
     wire turbo_button;
     
+        wire vsync_grid_edge_rect_char, hsync_grid_edge_rect_char;
+    wire [15:0] vcount_grid_edge_rect_char, hcount_grid_edge_rect_char;
+    wire [11:0] rgb_grid_edge_rect_char;
+    wire [7:0] char_pixels;
+		wire [10:0] addr;
+		wire [15:0] score;
+    
     grid_register grid_register (
        .clk(clk_65Mhz),
        .rgb_out(rgb_grid_register_grid_edges),
@@ -121,6 +128,7 @@ module MAIN(
 	     .rst(rst),
 	     .rect_read_in(rect_read_function_wire),
 	     .turbo_button(turbo_button),
+	     .score_out(score),
 	   //debug
 	     .keyboard_debug(word_uart_to_keyboard),
 	     .debug_keys(sw),
@@ -132,15 +140,18 @@ module MAIN(
     grid_edges grid_edges (
     .vcount_in(vcount_grid_register_grid_edges),
     .hcount_in(hcount_grid_register_grid_edges),
+    .vcount_out(vcount_grid_edge_rect_char),
+    .hcount_out(hcount_grid_edge_rect_char),
     .rgb_in(rgb_grid_register_grid_edges),
-    .rgb_out({r,g,b}),
+    .rgb_out(rgb_grid_edge_rect_char),
     .clk(clk_65Mhz),
     .hsync_in(hsync_grid_register_grid_edges),
     .vsync_in(vsync_grid_register_grid_edges),
-    .vsync_out(vsync),
-    .hsync_out(hsync)	
+    .vsync_out(vsync_grid_edge_rect_char),
+    .hsync_out(hsync_grid_edge_rect_char)	
     );
     
+
    
     //baud 9600
     uart uart (
@@ -156,9 +167,39 @@ module MAIN(
     .clk(clk_65Mhz),
     .rst(rst),
     .word_in(word_uart_to_keyboard),
-    .key(key)
+    .key(key),
     .turbo_button(turbo_button)
     );   
        
-                 
+     
+  draw_rect_char draw_rect_char (
+   
+         .clk(clk_65Mhz),
+    
+         .hsync_in(hsync_grid_edge_rect_char),
+       //  .vblnk_in(vblnk_background_rect_char),
+       //  .hblnk_in(hblnk_background_rect_char),
+         .vsync_in(vsync_grid_edge_rect_char),
+         .vcount_in(vcount_grid_edge_rect_char),
+         .hcount_in(hcount_grid_edge_rect_char),
+         .char_pixels(char_pixels),
+         .rgb_in(rgb_grid_edge_rect_char),
+         .score_in(score),
+         .hsync_out(hsync),
+     //    .vblnk_out(vblnk_rect_char_rect),
+     //    .hblnk_out(hblnk_rect_char_rect),
+         .vsync_out(vsync),
+    //     .vcount_out(vcount_rect_char_rect),
+    //     .hcount_out(hcount_rect_char_rect),
+         .addr(addr),
+         .rgb_out({r,g,b}),
+         .rst(rst)
+        );   
+  
+  font_rom font_rom (
+         .clk(clk_65Mhz),
+         .addr(addr),
+         .char_line_pixels(char_pixels)
+  );
+               
 endmodule
