@@ -146,7 +146,7 @@ module rect_controller(
 					begin
 						state_nxt = COLLISION_READ;	
 						snake_moving_iterator_nxt = 0;
-							for(i = 0; i < SNAKE_REG_SIZE; i=i+1)
+							for(i = 0; i <= SNAKE_REG_SIZE; i=i+1)
 								begin
 									snake_register_nxt[i+1] = snake_register[i]; //shift snake stack
 								end
@@ -244,7 +244,7 @@ module rect_controller(
 				SNACK_GENERATE:
 					begin
 						state_nxt = SNACK_CHECK_READ;
-						for(i = 0; i <= SNAKE_REG_SIZE; i=i+1)
+						for(i = 0; i <= 31; i=i+1)
 								{snack_gen_reg_x_nxt,snack_gen_reg_y_nxt} ={snack_gen_reg_x_nxt+snake_register[i][4:0],snack_gen_reg_y_nxt+snake_register[i][20:16]} ;
 					end	
 					
@@ -261,7 +261,7 @@ module rect_controller(
 						state_nxt = SNACK_CHECK_READ;		
 						if(rect_read_in != NULL)
 							begin
-							{snack_gen_reg_x_nxt,snack_gen_reg_y_nxt} =  + {snack_gen_reg_x+snake_register[2][20:16],snack_gen_reg_y+snake_register[2][4:0]};
+							{snack_gen_reg_x_nxt,snack_gen_reg_y_nxt} =  {snack_gen_reg_x+snake_register[2][4:0],snack_gen_reg_y+snake_register[2][20:16]};
 							end
 						else 
 							begin
@@ -280,23 +280,23 @@ module rect_controller(
 		end
    			
    always@(posedge clk)
-        begin
-			snake_writer_iterator <= snake_writer_iterator_nxt;
-			snake_moving_iterator <= snake_moving_iterator_nxt;
-			snake_size <= snake_size_nxt;
-			state <= state_nxt;
-			rect_write <= rect_write_nxt;
-			rect_read_out <= rect_read_out_nxt;
-			snack_gen_reg_y <= snack_gen_reg_y_nxt; 
-			snack_gen_reg_x<= snack_gen_reg_x_nxt; 
-			snake_speed <= snake_speed_nxt;
-			key_latch <= key_latch_nxt;	
-        end
+      begin
+				snake_writer_iterator <= snake_writer_iterator_nxt;
+				snake_moving_iterator <= snake_moving_iterator_nxt;
+				snake_size <= snake_size_nxt;
+				state <= state_nxt;
+				rect_write <= rect_write_nxt;
+				rect_read_out <= rect_read_out_nxt;
+				snack_gen_reg_y <= snack_gen_reg_y_nxt; 
+				snack_gen_reg_x<= snack_gen_reg_x_nxt; 
+				snake_speed <= snake_speed_nxt;
+				key_latch <= key_latch_nxt;	
+      end
         
 genvar X;		
 	generate
 			begin
-			for (X = 0; X < SNAKE_REG_SIZE; X = X+1)		
+			for (X = 0; X <= SNAKE_REG_SIZE; X = X+1)		
 				begin
 					always@(posedge clk)
 						begin

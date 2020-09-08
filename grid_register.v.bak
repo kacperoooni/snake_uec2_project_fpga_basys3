@@ -138,11 +138,12 @@ module grid_register(
                     end
                   SNAKE:
                     begin
-                      rgb_nxt = 12'h0_f_0;
+          //            rgb_nxt = 12'h0_f_0;
+          							rgb_nxt = 12'hC_2_B;
                     end
                   ROCK:
                     begin
-                      rgb_nxt = 12'hf_f_f;
+                      rgb_nxt = 12'h2_2_2;
                     end
                   SNACK:
                      begin

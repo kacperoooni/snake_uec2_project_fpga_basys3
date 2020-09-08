@@ -139,6 +139,7 @@ module grid_register(
                   SNAKE:
                     begin
                       rgb_nxt = 12'h0_f_0;
+          //							rgb_nxt = 12'hC_2_B;
                     end
                   ROCK:
                     begin
