@@ -29,6 +29,7 @@ module rect_controller(
 		input wire [7:0] key,
 		input wire rst,
 		input wire turbo_button,
+		input wire [7:0] r_data,
 		
 		
 	
@@ -351,7 +352,11 @@ genvar X;
 		else if(debug_keys == 5'b11001)	
 			begin
 				{hex3, hex2, hex1, hex0} = {snake_size}; //SNAKE_SIZE
-			end					
+			end
+		else if(debug_keys == 5'b10101)	
+			begin
+				{hex3, hex2, hex1, hex0} = {r_data}; //r_read 
+			end							
 		else		
 	// 	{hex3, hex2, hex1, hex0} = {rx[23:16],rx[7:0]};
 			{hex3, hex2, hex1, hex0} = 16'hFFFF;

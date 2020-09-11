@@ -16,7 +16,7 @@ module uart
     input wire  rx, //rd_uart, wr_uart,
     input wire [7:0] w_data,
     output wire  tx, //tx_full, rx_empty,
-   // output// wire [7:0] r_data
+    output wire [7:0] r_data,
     output reg [7:0] word,
     output wire [7:0] led
    );
@@ -28,7 +28,7 @@ module uart
    wire [7:0] tx_fifo_out, rx_data_out;
    
    reg rd_uart, rd_uart_nxt;
-   wire [7:0] r_data;
+  // wire [7:0] r_data;
    reg [7:0] word_nxt;
    
 
@@ -64,7 +64,7 @@ module uart
         word_nxt = r_data;
         rd_uart_nxt = 1;
         end
-    else if(rst)
+    else if(reset)
     		begin
     		word_nxt = 0;
     		rd_uart_nxt = 0;

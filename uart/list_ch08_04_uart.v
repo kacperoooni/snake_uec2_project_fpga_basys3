@@ -15,8 +15,8 @@ module uart
     input wire clk, reset,
     input wire  rx, //rd_uart, wr_uart,
     input wire [7:0] w_data,
-    output wire  tx, //tx_full, rx_empty,
-   // output// wire [7:0] r_data
+    output wire  tx, rx_empty,
+    output wire [7:0] r_data,
     output reg [7:0] word,
     output wire [7:0] led
    );
@@ -28,7 +28,7 @@ module uart
    wire [7:0] tx_fifo_out, rx_data_out;
    
    reg rd_uart, rd_uart_nxt;
-   wire [7:0] r_data;
+  // wire [7:0] r_data;
    reg [7:0] word_nxt;
    
 

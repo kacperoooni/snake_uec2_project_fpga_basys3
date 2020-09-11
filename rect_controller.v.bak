@@ -29,6 +29,7 @@ module rect_controller(
 		input wire [7:0] key,
 		input wire rst,
 		input wire turbo_button,
+		input wire [7:0] r_data,
 		
 		
 	
@@ -235,7 +236,7 @@ module rect_controller(
 						snake_size_nxt = snake_size + 5'd1;
 						state_nxt = SNACK_GENERATE;
 						snake_writer_iterator_nxt = 0;
-						score_nxt = score_out + (DIFFICULTY/2)*16'd10;
+						score_nxt = score_out + (DIFFICULTY*16'd10)/2;
 						if (snake_speed <= 20000000/DIFFICULTY) snake_speed_nxt = snake_speed;
 						else 	snake_speed_nxt = snake_speed - DIFFICULTY*1000000; 
 					end	
@@ -351,7 +352,11 @@ genvar X;
 		else if(debug_keys == 5'b11001)	
 			begin
 				{hex3, hex2, hex1, hex0} = {snake_size}; //SNAKE_SIZE
-			end					
+			end
+		else if(debug_keys == 5'b10101)	
+			begin
+				{hex3, hex2, hex1, hex0} = {r_read}; //r_read 
+			end							
 		else		
 	// 	{hex3, hex2, hex1, hex0} = {rx[23:16],rx[7:0]};
 			{hex3, hex2, hex1, hex0} = 16'hFFFF;

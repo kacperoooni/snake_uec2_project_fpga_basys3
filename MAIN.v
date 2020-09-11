@@ -92,7 +92,7 @@ module MAIN(
     wire hsync_grid_register_grid_edges,vsync_grid_register_grid_edges;
     wire [11:0] rgb_grid_register_grid_edges;
     wire [15:0] vcount_grid_register_grid_edges,hcount_grid_register_grid_edges;
-    wire [7:0] word_uart_to_keyboard, key;
+    wire [7:0] keydata_key_debouncer_to_keyboard_driver, key;
     wire turbo_button;
     
     wire vsync_grid_edge_rect_char, hsync_grid_edge_rect_char;
@@ -101,6 +101,8 @@ module MAIN(
     wire [7:0] char_pixels;
 		wire [10:0] addr;
 		wire [15:0] score;
+		wire [7:0] r_data, r_data_debug;
+		wire rx_empty;
     
     grid_register grid_register (
        .clk(clk_65Mhz),
@@ -130,10 +132,11 @@ module MAIN(
 	     .turbo_button(turbo_button),
 	     .score_out(score),
 	   //debug
-	     .keyboard_debug(word_uart_to_keyboard),
+	  //   .keyboard_debug(word_uart_to_keyboard),
 	     .debug_keys(sw),
 	     .sseg(sseg),
-	     .an(an)
+	     .an(an),
+	     .r_data(r_data_debug)
        );  
        
        
@@ -159,14 +162,15 @@ module MAIN(
     .reset(rst),
     .rx(rx),
     .tx(tx),
-    .word(word_uart_to_keyboard),
-    .led(led)
+    .led(led),
+    .r_data(r_data),
+    .rx_empty(rx_empty)
     );
     
     keyboard_driver keyboard_driver (
     .clk(clk_65Mhz),
     .rst(rst),
-    .word_in(word_uart_to_keyboard),
+  	.word_in(keydata_key_debouncer_to_keyboard_driver),
     .key(key),
     .turbo_button(turbo_button)
     );   
@@ -200,6 +204,15 @@ module MAIN(
          .clk(clk_65Mhz),
          .addr(addr),
          .char_line_pixels(char_pixels)
+  );
+  
+  key_debouncer key_debouncer (
+  			.clk(clk_65Mhz),
+  			.r_data(r_data),
+  			.rx_empty(rx_empty),
+  			.r_data_debug(r_data_debug),
+  			.key_data(keydata_key_debouncer_to_keyboard_driver)
+  
   );
                
 endmodule
