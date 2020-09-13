@@ -48,8 +48,7 @@ output reg [7:0] char_code
                      8'h09: addr_x = 8'h30+char_2; //
                      8'h0A: addr_x = 8'h30+char_3; //
                      8'h0B: addr_x = 8'h30+char_4; //
-                     default: addr_x = 8'h20;
-                     
+                     default: addr_x = 8'h20;       
         endcase
         end
         

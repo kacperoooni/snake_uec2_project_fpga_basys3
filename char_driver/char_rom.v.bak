@@ -36,19 +36,19 @@ output reg [7:0] char_code
     always@(*)
     begin
         case (char_xy)
-         						 8'h00: addr_x = 7'h53; // S
-                     8'h01: addr_x = 7'h43; // C
-                     8'h02: addr_x = 7'h4F; // O
-                     8'h03: addr_x = 7'h52; // R
-                     8'h04: addr_x = 7'h45; // E
-                     8'h05: addr_x = 7'h3a; // :
-                     8'h06: addr_x = 7'h20;
-                     8'h07: addr_x = 7'h30+char_0; //
-                     8'h08: addr_x = 7'h30+char_1; //
-                     8'h09: addr_x = 7'h30+char_2; //
-                     8'h0A: addr_x = 7'h30+char_3; //
-                     8'h0B: addr_x = 7'h30+char_4; //
-                     default: addr_x = 7'h20;
+         						8'h00: addr_x = 8'h53; // S
+                     8'h01: addr_x = 8'h43; // C
+                     8'h02: addr_x = 8'h4F; // O
+                     8'h03: addr_x = 8'h52; // R
+                     8'h04: addr_x = 8'h45; // E
+                     8'h05: addr_x = 8'h3a; // :
+                     8'h06: addr_x = 8'h20;
+                     8'h07: addr_x = 8'h30+char_0; //
+                     8'h08: addr_x = 8'h30+char_1; //
+                     8'h09: addr_x = 8'h30+char_2; //
+                     8'h0A: addr_x = 8'h30+char_3; //
+                     8'h0B: addr_x = 8'h30+char_4; //
+                     default: addr_x = 8'h20;
                      
         endcase
         end

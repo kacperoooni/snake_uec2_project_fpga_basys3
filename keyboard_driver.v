@@ -20,7 +20,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module keyboard_driver(
+module keyboard_driver_moving(
 		input wire [7:0] word_in,
 		input wire clk, rst,
 		output reg [7:0] key,

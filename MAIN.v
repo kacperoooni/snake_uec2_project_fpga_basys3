@@ -98,11 +98,15 @@ module MAIN(
     wire vsync_grid_edge_rect_char, hsync_grid_edge_rect_char;
     wire [15:0] vcount_grid_edge_rect_char, hcount_grid_edge_rect_char;
     wire [11:0] rgb_grid_edge_rect_char;
-    wire [7:0] char_pixels;
-		wire [10:0] addr;
+    wire [7:0] char_number_score, char_code_score;
 		wire [15:0] score;
 		wire [7:0] r_data, r_data_debug;
 		wire rx_empty;
+		wire [15:0] vcount_score_to_menu, hcount_score_to_menu;
+		wire [11:0] rgb_score_to_menu;
+		wire hsync_score_to_menu,vsync_score_to_menu;
+		wire menu_interrupt_menu_to_rect;
+		wire [15:0] iterator_debug;
     
     grid_register grid_register (
        .clk(clk_65Mhz),
@@ -136,7 +140,9 @@ module MAIN(
 	     .debug_keys(sw),
 	     .sseg(sseg),
 	     .an(an),
-	     .r_data(r_data_debug)
+	     .r_data(r_data_debug),
+	     .menu_interrupt(menu_interrupt_menu_to_rect),
+	     .iterator_debug(iterator_debug)
        );  
        
        
@@ -167,12 +173,12 @@ module MAIN(
     .rx_empty(rx_empty)
     );
     
-    keyboard_driver keyboard_driver (
-    .clk(clk_65Mhz),
-    .rst(rst),
-  	.word_in(keydata_key_debouncer_to_keyboard_driver),
-    .key(key),
-    .turbo_button(turbo_button)
+    keyboard_driver_moving keyboard_driver_moving (
+	    .clk(clk_65Mhz),
+	    .rst(rst),
+	  	.word_in(keydata_key_debouncer_to_keyboard_driver),
+	    .key(key),
+	    .turbo_button(turbo_button)
     );   
        
      
@@ -186,25 +192,26 @@ module MAIN(
          .vsync_in(vsync_grid_edge_rect_char),
          .vcount_in(vcount_grid_edge_rect_char),
          .hcount_in(hcount_grid_edge_rect_char),
-         .char_pixels(char_pixels),
          .rgb_in(rgb_grid_edge_rect_char),
-         .score_in(score),
-         .hsync_out(hsync),
+         .hsync_out(hsync_score_to_menu),
      //    .vblnk_out(vblnk_rect_char_rect),
      //    .hblnk_out(hblnk_rect_char_rect),
-         .vsync_out(vsync),
-    //     .vcount_out(vcount_rect_char_rect),
-    //     .hcount_out(hcount_rect_char_rect),
-         .addr(addr),
-         .rgb_out({r,g,b}),
-         .rst(rst)
+         .vsync_out(vsync_score_to_menu),
+         .vcount_out(vcount_score_to_menu),
+         .hcount_out(hcount_score_to_menu),
+         .rgb_out(rgb_score_to_menu),
+         .rst(rst),
+         .char_xy_w(char_number_score),
+         .addr_x_w(char_code_score)
         );   
   
-  font_rom font_rom (
-         .clk(clk_65Mhz),
-         .addr(addr),
-         .char_line_pixels(char_pixels)
-  );
+  char_rom char_rom (
+		    .clk(clk_65Mhz),
+		    .char_xy(char_number_score),
+		    .char_code(char_code_score),
+		    .score_in(score)
+    );
+    
   
   key_debouncer key_debouncer (
   			.clk(clk_65Mhz),
@@ -212,7 +219,21 @@ module MAIN(
   			.rx_empty(rx_empty),
   			.r_data_debug(r_data_debug),
   			.key_data(keydata_key_debouncer_to_keyboard_driver)
-  
   );
                
+  menu_display menu_display (
+  			.clk(clk_65Mhz),
+  			.rst(rst),
+  			.key(keydata_key_debouncer_to_keyboard_driver),
+  			.hcount(hcount_grid_edge_rect_char),
+  			.vcount(vcount_grid_edge_rect_char),
+  			.hsync_in(hsync_score_to_menu),
+  			.vsync_in(vsync_score_to_menu),
+  			.rgb_in(rgb_score_to_menu),
+  			.rgb_out({r,g,b}),
+  			.vsync_out(vsync),
+  			.hsync_out(hsync),
+  			.menu_interrupt_out(menu_interrupt_menu_to_rect),
+  			.iterator_debug(iterator_debug)	
+  );             
 endmodule

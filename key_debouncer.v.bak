@@ -42,7 +42,7 @@ module key_debouncer(
     if(rx_empty == 0)
     	begin 
     		key_data_nxt = r_data;
-    		r_data_debug = 8'hFF;
+    		r_data_debug = r_data;
     	end	
     else 
     	begin

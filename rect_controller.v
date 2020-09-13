@@ -30,6 +30,7 @@ module rect_controller(
 		input wire rst,
 		input wire turbo_button,
 		input wire [7:0] r_data,
+		input wire menu_interrupt,
 		
 		
 	
@@ -37,7 +38,8 @@ module rect_controller(
 		output reg [3:0] an,  // enable 1-out-of-4 asserted low
     output reg [6:0] sseg, // led segments
 		input wire [4:0] debug_keys,
-		input wire [7:0] keyboard_debug
+		input wire [7:0] keyboard_debug,
+		input wire [15:0] iterator_debug 
 	
 	
     );
@@ -62,7 +64,8 @@ module rect_controller(
 		COLLISION_CHECK = 5'd7,
 		SNACK_GENERATE = 5'd8,
 		SNACK_CHECK_READ = 5'd9,
-		SNACK_CHECK_WRITE = 5'd10;
+		SNACK_CHECK_WRITE = 5'd10,
+		MENU_INTERRUPT = 5'd11;
    
    localparam //keys
     UP = 8'h38,
@@ -111,113 +114,114 @@ module rect_controller(
   //{rect_write_x,rect_write_y,rect_write_function} = rect_write;
    always@(*)
      begin
-			state_nxt = INIT;
-			snake_moving_iterator_nxt = snake_moving_iterator + 1;
-			snake_writer_iterator_nxt = snake_writer_iterator;
-			snake_size_nxt = snake_size;
-			rect_write_nxt = rect_write; //WARNING!! CAN CAUSE UNEXPECTED WRITE TO MEMORY
-			snack_gen_reg_y_nxt = snack_gen_reg_y;
-			snack_gen_reg_x_nxt = snack_gen_reg_x;
-			rect_read_out_nxt = rect_read_out;
-			snake_speed_nxt = snake_speed;
-			score_nxt = score_out;
-			for(i = 0; i <= SNAKE_REG_SIZE; i=i+1)
-				begin
-					snake_register_nxt[i] = snake_register[i];
-				end
-
-			
-			case(state)
-				INIT:
+				state_nxt = INIT;
+				snake_moving_iterator_nxt = snake_moving_iterator + 1;
+				snake_writer_iterator_nxt = snake_writer_iterator;
+				snake_size_nxt = snake_size;
+				rect_write_nxt = rect_write; //WARNING!! CAN CAUSE UNEXPECTED WRITE TO MEMORY
+				snack_gen_reg_y_nxt = snack_gen_reg_y;
+				snack_gen_reg_x_nxt = snack_gen_reg_x;
+				rect_read_out_nxt = rect_read_out;
+				snake_speed_nxt = snake_speed;
+				score_nxt = score_out;
+				for(i = 0; i <= SNAKE_REG_SIZE; i=i+1)
 					begin
-						for(i = 0; i <= SNAKE_REG_SIZE; i=i+1)
+						snake_register_nxt[i] = snake_register[i];
+					end
+
+
+				case(state)
+					INIT:
+						begin
+							for(i = 0; i <= SNAKE_REG_SIZE; i=i+1)
 							begin
 								snake_register_nxt[i] = 0;
 							end
-						snake_register_nxt[0] = {16'd15,16'd15};	
-						snake_register_nxt[1] = {16'd16,16'd15};
-						snake_register_nxt[2] = {16'd17,16'd15};
-						snake_register_nxt[3] = {16'd18,16'd15};
-						snake_size_nxt = 3; // with 0
-						snake_writer_iterator_nxt = 0;
-						snake_moving_iterator_nxt = 0;
-						snake_speed_nxt = 50000000;
-						state_nxt = SNAKE_MOVING;
-						key_latch_nxt = LEFT;
-						score_nxt = 0;
-					end
-					
-				SNAKE_MOVING:
-					begin
-						state_nxt = COLLISION_READ;	
-						snake_moving_iterator_nxt = 0;
+							snake_register_nxt[0] = {16'd15,16'd15};
+							snake_register_nxt[1] = {16'd16,16'd15};
+							snake_register_nxt[2] = {16'd17,16'd15};
+							snake_register_nxt[3] = {16'd18,16'd15};
+							snake_size_nxt = 3; // with 0
+							snake_writer_iterator_nxt = 0;
+							snake_moving_iterator_nxt = 0;
+							snake_speed_nxt = 50000000;
+							state_nxt = SNAKE_MOVING;
+							key_latch_nxt = LEFT;
+							score_nxt = 0;
+						end
+
+					SNAKE_MOVING:
+						begin
+							state_nxt = COLLISION_READ;
+							snake_moving_iterator_nxt = 0;
 							for(i = 0; i <= SNAKE_REG_SIZE; i=i+1)
-								begin
-									snake_register_nxt[i+1] = snake_register[i]; //shift snake stack
-								end
+							begin
+								snake_register_nxt[i+1] = snake_register[i]; //shift snake stack
+							end
 							case(key)
 								DOWN:
-									begin
-										snake_register_nxt[0] = {snake_register[0][31:16],snake_register[0][15:0]+16'd1};
-									end	
+								begin
+									snake_register_nxt[0] = {snake_register[0][31:16],snake_register[0][15:0]+16'd1};
+								end
 								LEFT:
-									begin
-										snake_register_nxt[0] = {snake_register[0][31:16]-16'd1,snake_register[0][15:0]};
-									end	
+								begin
+									snake_register_nxt[0] = {snake_register[0][31:16]-16'd1,snake_register[0][15:0]};
+								end
 								RIGHT:
-									begin
-										snake_register_nxt[0] = {snake_register[0][31:16]+16'd1,snake_register[0][15:0]};
-									end			
+								begin
+									snake_register_nxt[0] = {snake_register[0][31:16]+16'd1,snake_register[0][15:0]};
+								end
 								UP:
-									begin
-										snake_register_nxt[0] = {snake_register[0][31:16],snake_register[0][15:0]-16'd1};
-									end
+								begin
+									snake_register_nxt[0] = {snake_register[0][31:16],snake_register[0][15:0]-16'd1};
+								end
 								DOWN_RIGHT:
-									begin
-										snake_register_nxt[0] = {snake_register[0][31:16]+16'd1,snake_register[0][15:0]+16'd1};
-									end
+								begin
+									snake_register_nxt[0] = {snake_register[0][31:16]+16'd1,snake_register[0][15:0]+16'd1};
+								end
 								DOWN_LEFT:
-									begin
-										snake_register_nxt[0] = {snake_register[0][31:16]-16'd1,snake_register[0][15:0]+16'd1};
-									end
+								begin
+									snake_register_nxt[0] = {snake_register[0][31:16]-16'd1,snake_register[0][15:0]+16'd1};
+								end
 								UP_RIGHT:
-									begin
-										snake_register_nxt[0] = {snake_register[0][31:16]+16'd1,snake_register[0][15:0]-16'd1};
-									end
+								begin
+									snake_register_nxt[0] = {snake_register[0][31:16]+16'd1,snake_register[0][15:0]-16'd1};
+								end
 								UP_LEFT:
-									begin
-										snake_register_nxt[0] = {snake_register[0][31:16]-16'd1,snake_register[0][15:0]-16'd1};
-									end					
-								default: begin end	
+								begin
+									snake_register_nxt[0] = {snake_register[0][31:16]-16'd1,snake_register[0][15:0]-16'd1};
+								end
+								default: begin end
 								//TO DO DIAGONALS
-							endcase	
-					end	
-						
+							endcase
+						end
+
 					SNAKE_DRAWING:
 						begin
 							if (turbo_button == 1 && snake_moving_iterator == SNAKE_TURBO) state_nxt = SNAKE_MOVING;
 							else if(snake_moving_iterator == snake_speed)	state_nxt = SNAKE_MOVING;
-							else state_nxt = SNAKE_DRAWING; 	
-							
+							else if(menu_interrupt == 1) state_nxt = MENU_INTERRUPT;
+							else state_nxt = SNAKE_DRAWING;
+
 							if(snake_register[snake_writer_iterator] != 0)
-								rect_write_nxt = {snake_register[snake_writer_iterator], SNAKE};
-						  if(snake_writer_iterator == snake_size+16'd1)
-								begin
-									rect_write_nxt = {snake_register[snake_writer_iterator], NULL};
-									snake_register_nxt[snake_writer_iterator] = 0;
-								end	
-			
+							rect_write_nxt = {snake_register[snake_writer_iterator], SNAKE};
+							if(snake_writer_iterator == snake_size+16'd1)
+							begin
+								rect_write_nxt = {snake_register[snake_writer_iterator], NULL};
+								snake_register_nxt[snake_writer_iterator] = 0;
+							end
+
 							if(snake_writer_iterator == SNAKE_REG_SIZE) snake_writer_iterator_nxt = 0;
-							else snake_writer_iterator_nxt = snake_writer_iterator + 16'd1;	
+							else snake_writer_iterator_nxt = snake_writer_iterator + 16'd1;
 						end
-				
-				COLLISION_READ:
+
+					COLLISION_READ:
 						begin
 							state_nxt = COLLISION_CHECK;
 							rect_read_out_nxt = snake_register[0];
-						end	
-						
-				COLLISION_CHECK:		
+						end
+
+					COLLISION_CHECK:
 						begin
 							case(rect_read_in)
 								SNAKE:
@@ -227,62 +231,67 @@ module rect_controller(
 								ROCK:
 									state_nxt = GAME_OVER;
 								default:
-									state_nxt = SNAKE_DRAWING;			
+									state_nxt = SNAKE_DRAWING;
 							endcase
-						end	
-													
-				SNAKE_GROW:
-					begin
-						snake_size_nxt = snake_size + 5'd1;
-						state_nxt = SNACK_GENERATE;
-						snake_writer_iterator_nxt = 0;
-						score_nxt = score_out + (DIFFICULTY*16'd10)/2;
-						if (snake_speed <= 20000000/DIFFICULTY) snake_speed_nxt = snake_speed;
-						else 	snake_speed_nxt = snake_speed - DIFFICULTY*1000000; 
-					end	
-					
-				GAME_OVER:	
-					begin
-						if(rst) state_nxt = INIT;
-						else state_nxt = GAME_OVER;
-					end
-					
-				SNACK_GENERATE:
-					begin
-						state_nxt = SNACK_CHECK_READ;
-						for(i = 0; i <= 31; i=i+1)
+						end
+
+					SNAKE_GROW:
+						begin
+							snake_size_nxt = snake_size + 5'd1;
+							state_nxt = SNACK_GENERATE;
+							snake_writer_iterator_nxt = 0;
+							score_nxt = score_out + (DIFFICULTY*16'd10)/2;
+							if (snake_speed <= 20000000/DIFFICULTY) snake_speed_nxt = snake_speed;
+							else 	snake_speed_nxt = snake_speed - DIFFICULTY*1000000;
+						end
+
+					GAME_OVER:
+						begin
+							if(rst) state_nxt = INIT;
+							else state_nxt = GAME_OVER;
+						end
+
+					SNACK_GENERATE:
+						begin
+							state_nxt = SNACK_CHECK_READ;
+							for(i = 0; i <= 31; i=i+1)
 								{snack_gen_reg_x_nxt,snack_gen_reg_y_nxt} ={snack_gen_reg_x_nxt+snake_register[i][4:0],snack_gen_reg_y_nxt+snake_register[i][20:16]} ;
-					end	
-					
-				SNACK_CHECK_READ:
-					begin
-						state_nxt = SNACK_CHECK_WRITE;
-						rect_read_out_nxt = {11'b0, snack_gen_reg_x, 11'b0, snack_gen_reg_y};
-				//		rect_read_out_nxt[20:16] = snack_gen_reg_x;
-				//		rect_read_out_nxt[4:0] = snack_gen_reg_y;
-					end
-						
-				SNACK_CHECK_WRITE:
-					begin
-						state_nxt = SNACK_CHECK_READ;		
-						if(rect_read_in != NULL)
-							begin
-							{snack_gen_reg_x_nxt,snack_gen_reg_y_nxt} =  {snack_gen_reg_x+snake_register[2][4:0],snack_gen_reg_y+snake_register[2][20:16]};
-							end
-						else 
-							begin
-							rect_write_nxt = 32'b0;			
-							rect_write_nxt[24:20] = snack_gen_reg_x;
-							rect_write_nxt[8:4] = snack_gen_reg_y;
-							rect_write_nxt[3:0] = SNACK;
-							state_nxt = SNAKE_DRAWING;
-							end
-						//TODO snack on snake checking
-					end	
-			endcase
-			if(rst) state_nxt = INIT;
-		
-			
+						end
+
+					SNACK_CHECK_READ:
+						begin
+							state_nxt = SNACK_CHECK_WRITE;
+							rect_read_out_nxt = {11'b0, snack_gen_reg_x, 11'b0, snack_gen_reg_y};
+							//		rect_read_out_nxt[20:16] = snack_gen_reg_x;
+							//		rect_read_out_nxt[4:0] = snack_gen_reg_y;
+						end
+
+					SNACK_CHECK_WRITE:
+						begin
+							state_nxt = SNACK_CHECK_READ;
+							if(rect_read_in != NULL)
+								begin
+									{snack_gen_reg_x_nxt,snack_gen_reg_y_nxt} =  {snack_gen_reg_x+snake_register[2][4:0],snack_gen_reg_y+snake_register[2][20:16]};
+								end
+							else
+								begin
+									rect_write_nxt = 32'b0;
+									rect_write_nxt[24:20] = snack_gen_reg_x;
+									rect_write_nxt[8:4] = snack_gen_reg_y;
+									rect_write_nxt[3:0] = SNACK;
+									state_nxt = SNAKE_DRAWING;
+								end
+							//TODO snack on snake checking
+						end
+					MENU_INTERRUPT:
+						begin
+							if(menu_interrupt == 1) state_nxt = MENU_INTERRUPT;
+							else state_nxt = SNAKE_DRAWING;
+							snake_moving_iterator_nxt = snake_moving_iterator;
+						end			
+				endcase
+
+			if(rst) state_nxt = INIT;	
 		end
    			
    always@(posedge clk)
@@ -356,7 +365,11 @@ genvar X;
 		else if(debug_keys == 5'b10101)	
 			begin
 				{hex3, hex2, hex1, hex0} = {r_data}; //r_read 
-			end							
+			end
+		else if(debug_keys == 5'b00101)	
+			begin
+				{hex3, hex2, hex1, hex0} = iterator_debug; //r_read 
+			end									
 		else		
 	// 	{hex3, hex2, hex1, hex0} = {rx[23:16],rx[7:0]};
 			{hex3, hex2, hex1, hex0} = 16'hFFFF;

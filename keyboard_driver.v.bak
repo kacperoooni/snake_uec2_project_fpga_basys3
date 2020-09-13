@@ -127,7 +127,7 @@ module keyboard_driver(
     
     always@(posedge clk)
     	begin
-    		turbo_button <= turbo_button_nxtl
+    		turbo_button <= turbo_button_nxt;
     		state <= state_nxt;
     		key <= key_nxt;
     	end	

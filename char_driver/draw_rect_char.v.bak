@@ -20,7 +20,17 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module draw_rect_char(
+module draw_rect_char
+		#( parameter
+				FONT_RECT_HEIGHT = 256, //podaj liczbe podzielna przez 16
+				FONT_RECT_WIDTH = 128, // podaj liczbe podzielna przez 8
+				FONT_START_X = 850,
+				FONT_START_Y = 30,
+				FONT_COLOR = 12'hf_f_f,
+        FONT_BACKGROUND = 0,
+        FONT_BACKGROUND_COLOR;
+    )
+    (
     input wire clk,
 
     input wire hsync_in,
@@ -29,9 +39,10 @@ module draw_rect_char(
     input wire vsync_in,
     input wire [15:0] vcount_in,
     input wire [15:0] hcount_in,
-    input wire [0:7] char_pixels,
     input wire [11:0] rgb_in,
     input wire rst,
+		output reg [7:0] char_xy_w,
+    input wire [7:0] addr_x_w,
     
     output wire hsync_out,
     output wire vblnk_out,
@@ -39,19 +50,19 @@ module draw_rect_char(
     output wire vsync_out,
     output wire [15:0] vcount_out,
     output wire [15:0] hcount_out,
-    output wire [10:0] addr,
+    
     output reg [11:0] rgb_out
     
     );
     
     localparam FONT_HEIGHT = 16,
                FONT_WIDTH = 8,
-               FONT_RECT_HEIGHT = 256, //podaj liczbe podzielna przez 16
-               FONT_RECT_WIDTH = 128, // podaj liczbe podzielna przez 8
-               FONT_START_X = 850,
-               FONT_START_Y = 30,
-               ASCI_ADDR_START = 48,
-               FONT_COLOR = 12'hf_f_f;
+           //    FONT_RECT_HEIGHT = 256, //podaj liczbe podzielna przez 16
+           //    FONT_RECT_WIDTH = 128, // podaj liczbe podzielna przez 8
+           //    FONT_START_X = 850,
+           //    FONT_START_Y = 30,
+               ASCI_ADDR_START = 48;
+           //    FONT_COLOR = 12'hf_f_f;
              // FONT_BACKGROUND = rgb_in;   
     //STATES
                localparam  INIT = 0,
@@ -83,13 +94,15 @@ module draw_rect_char(
     
     
  
-    reg [7:0] char_xy_w;
-    wire [7:0] addr_x_w;
+    
                    
     wire [11:0] rgb_in_del;
     
-    reg [3:0] state_nxt = INIT;
+    reg [3:0] state_nxt;
     reg [3:0] state;
+    
+    wire [10:0] addr;
+		wire [0:7] char_pixels;
     
     
                 
@@ -104,7 +117,7 @@ module draw_rect_char(
 		    offset_nxt = offset;
 		    char_counter_nxt = char_counter;
 		    font_iterator_x_nxt = font_iterator_x;
-		    state_nxt = state;
+		    state_nxt = INIT;
 		    case(state)
 		    
 		    INIT:
@@ -129,7 +142,8 @@ module draw_rect_char(
 		        begin
 			        state_nxt = BIT_PAINTING;
 			        font_iterator_x_nxt = font_iterator_x + 1;
-			        rgb_nxt = (char_pixels[font_iterator_x] == 1) ? FONT_COLOR : rgb_in;
+			        if(FONT_BACKGROUND == 1) rgb_nxt = (char_pixels[font_iterator_x] == 1) ? FONT_COLOR : FONT_BACKGROUND_COLOR;
+			        else rgb_nxt = (char_pixels[font_iterator_x] == 1) ? FONT_COLOR : rgb_in;
 			        if(font_iterator_x == 7) 
 			            begin
 			            font_iterator_x_nxt = 0;
@@ -193,14 +207,12 @@ module draw_rect_char(
     end
     
     
-    char_rom char_rom (
-    .clk(clk),
-    .char_xy(char_xy_w),
-    .char_code(addr_x_w),
-    .score_in(score_in)
-    );
     
-    
+    font_rom font_rom (
+         .clk(clk),
+         .addr(addr),
+         .char_line_pixels(char_pixels)
+  );
     
     
     

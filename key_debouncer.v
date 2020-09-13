@@ -20,8 +20,6 @@
 //////////////////////////////////////////////////////////////////////////////////
 module key_debouncer(
 	input wire clk,
-	input wire [15:0] vcount, hcount,
-	output wire vsync_in,hsync_in,hsync_out,vsync_out,
 	input wire rx_empty,
 	input wire [7:0] r_data,
 	output reg [7:0] r_data_debug,
