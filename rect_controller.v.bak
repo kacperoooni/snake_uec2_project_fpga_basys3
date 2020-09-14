@@ -30,7 +30,7 @@ module rect_controller(
 		input wire rst,
 		input wire turbo_button,
 		input wire [7:0] r_data,
-		input wire menu_interrupt,
+		input wire menu_interrupt, game_start,
 		
 		
 	
@@ -39,7 +39,7 @@ module rect_controller(
     output reg [6:0] sseg, // led segments
 		input wire [4:0] debug_keys,
 		input wire [7:0] keyboard_debug,
-		input wire [31:0] iterator_debug 
+		input wire [15:0] iterator_debug 
 	
 	
     );
@@ -53,7 +53,8 @@ module rect_controller(
       ROCK = 4'b0010,
       SNACK = 4'b0100;
    
-   localparam //states
+   localparam
+   WAIT_FOR_START = 5'd12, //states
 		INIT = 5'd0,
 		SNAKE_MOVING = 5'd1,
 		SNAKE_GROW = 5'd2,
@@ -114,7 +115,7 @@ module rect_controller(
   //{rect_write_x,rect_write_y,rect_write_function} = rect_write;
    always@(*)
      begin
-				state_nxt = INIT;
+				state_nxt = WAIT_FOR_START;
 				snake_moving_iterator_nxt = snake_moving_iterator + 1;
 				snake_writer_iterator_nxt = snake_writer_iterator;
 				snake_size_nxt = snake_size;
@@ -131,6 +132,11 @@ module rect_controller(
 
 
 				case(state)
+					WAIT_FOR_START:
+						begin
+							if(game_start == 1) state_nxt = INIT;
+							else state_nxt = WAIT_FOR_START; 
+						end	
 					INIT:
 						begin
 							for(i = 0; i <= SNAKE_REG_SIZE; i=i+1)
@@ -291,7 +297,7 @@ module rect_controller(
 						end			
 				endcase
 
-			if(rst) state_nxt = INIT;	
+			if(rst) state_nxt = WAIT_FOR_START;	
 		end
    			
    always@(posedge clk)

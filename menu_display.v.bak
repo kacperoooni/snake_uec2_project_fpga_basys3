@@ -30,12 +30,12 @@ module menu_display(
 		output reg hsync_out,vsync_out,
 		input wire [11:0] rgb_in,
 		output reg [11:0] rgb_out,
-		output reg menu_interrupt_out,
+		output reg menu_interrupt_out, game_start,
 		output wire [15:0] iterator_debug
     );
 		assign iterator_debug = iterator;
     wire [7:0] char_number_score, char_code_score;
-    reg menu_interrupt_nxt;
+    reg menu_interrupt_nxt,game_start_nxt;
     wire [11:0] rgb_rect;
     reg [3:0] state,state_nxt;
     reg [11:0] rgb_nxt;
@@ -48,14 +48,16 @@ module menu_display(
     localparam
     KEY_1 = 8'h31,
     KEY_2 = 8'h32,
-    KEY_3 = 8'h33;
+    KEY_3 = 8'h33,
+    ESC = 8'h1b,
+    ENTER= 8'h0d;
 
     always@(*)
     	begin
 	    	state_nxt = INIT;
 		   	if(iterator == 4) iterator_nxt = 4;
 		  	else iterator_nxt = iterator + 1;
-
+				game_start_nxt = game_start;
 	    	rgb_nxt = rgb_in_delayed;
 	    	menu_interrupt_nxt = menu_interrupt_out;
 	    	case(state)
@@ -64,14 +66,21 @@ module menu_display(
 	    				state_nxt = WAIT_FOR_KEY;
 	    				menu_interrupt_nxt = 0;
 	    				iterator_nxt = 0;
-	    			end
+	    				game_start_nxt = 0;
+	    			end  			
 	    		WAIT_FOR_KEY:
 	    			begin
-	    				if((key == 8'h1b) && (iterator == 4))
+	    				if((key == ESC) && (iterator == 4))
 	    					begin
 	    					 state_nxt = MENU_OPEN;
 	    					 iterator_nxt = 0;
-	    					end 
+	    					end
+	    				else if((key == ENTER) && (iterator == 4))
+		    				begin
+		    					 state_nxt = WAIT_FOR_KEY;
+		    					 iterator_nxt = 0;
+		    					 game_start_nxt = 1;
+		    				end	 
 	    			  else state_nxt = WAIT_FOR_KEY;
 	    				menu_interrupt_nxt = 0;
 	    			end
@@ -86,16 +95,26 @@ module menu_display(
 	    				if(iterator == 4)
 	    					begin
 	    						case(key)
-	    							KEY_1:begin end
-	    							KEY_2:begin end
-	    							KEY_3:begin end
+	    							KEY_1:
+	    								begin
+	    									iterator_nxt = 0;
+	    								end
+	    							KEY_2:
+	    								begin 
+	    									iterator_nxt = 0;	
+	    								end
+	    							KEY_3:
+	    								begin
+	    									iterator_nxt = 0;	
+	    								end
 	    						endcase
-	    						iterator_nxt = 0;
+	    						
 	    					end		
 	    				rgb_nxt = rgb_rect;
 	    				menu_interrupt_nxt = 1;
 	    			end
 	    	endcase
+	    	if(rst) state_nxt = INIT;
     	end
 
    wire [15:0] vcount_nxt, hcount_nxt;
@@ -111,6 +130,7 @@ module menu_display(
     		state <= state_nxt;
     		menu_interrupt_out <= menu_interrupt_nxt;
     		iterator <= iterator_nxt;
+    		game_start <= game_start_nxt;
     	end
 
     defparam draw_rect_char_menu.FONT_BACKGROUND = 1;
@@ -122,7 +142,7 @@ module menu_display(
     wire [11:0] rgb_in_delayed;
 
     defparam delay_rgb_in.WIDTH = 12;
-    defparam delay_rgb_in.CLK_DEL = 4;
+    defparam delay_rgb_in.CLK_DEL = 3;
 
     delay delay_rgb_in (
         .clk(clk),

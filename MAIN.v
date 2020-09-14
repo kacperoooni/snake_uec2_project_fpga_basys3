@@ -81,7 +81,7 @@ module MAIN(
        .rgb_out(rgb_RGB_to_grid),
        .vcount_out(vcount_wire_RGB_to_grid),
        .hcount_out(hcount_wire_RGB_to_grid),
-	   .rst(rst)
+	   	 .rst(rst)
       );
     
     wire [31:0] rect_read_wire;
@@ -123,7 +123,8 @@ module MAIN(
        .hsync_in(hsync_rgb_controller_grid_register),
        .vsync_in(vsync_rgb_controller_grid_register),
        .hsync_out(hsync_grid_register_grid_edges),
-       .vsync_out(vsync_grid_register_grid_edges)
+       .vsync_out(vsync_grid_register_grid_edges),
+       .game_start(game_start)
        );
     
     rect_controller rect_controller (
@@ -135,42 +136,42 @@ module MAIN(
 	     .rect_read_in(rect_read_function_wire),
 	     .turbo_button(turbo_button),
 	     .score_out(score),
+	     .game_start(game_start),
+	     .menu_interrupt(menu_interrupt_menu_to_rect),
 	   //debug
-	  //   .keyboard_debug(word_uart_to_keyboard),
 	     .debug_keys(sw),
 	     .sseg(sseg),
 	     .an(an),
 	     .r_data(r_data_debug),
-	     .menu_interrupt(menu_interrupt_menu_to_rect),
 	     .iterator_debug(iterator_debug)
        );  
        
        
     grid_edges grid_edges (
-    .vcount_in(vcount_grid_register_grid_edges),
-    .hcount_in(hcount_grid_register_grid_edges),
-    .vcount_out(vcount_grid_edge_rect_char),
-    .hcount_out(hcount_grid_edge_rect_char),
-    .rgb_in(rgb_grid_register_grid_edges),
-    .rgb_out(rgb_grid_edge_rect_char),
-    .clk(clk_65Mhz),
-    .hsync_in(hsync_grid_register_grid_edges),
-    .vsync_in(vsync_grid_register_grid_edges),
-    .vsync_out(vsync_grid_edge_rect_char),
-    .hsync_out(hsync_grid_edge_rect_char)	
+	    .vcount_in(vcount_grid_register_grid_edges),
+	    .hcount_in(hcount_grid_register_grid_edges),
+	    .vcount_out(vcount_grid_edge_rect_char),
+	    .hcount_out(hcount_grid_edge_rect_char),
+	    .rgb_in(rgb_grid_register_grid_edges),
+	    .rgb_out(rgb_grid_edge_rect_char),
+	    .clk(clk_65Mhz),
+	    .hsync_in(hsync_grid_register_grid_edges),
+	    .vsync_in(vsync_grid_register_grid_edges),
+	    .vsync_out(vsync_grid_edge_rect_char),
+	    .hsync_out(hsync_grid_edge_rect_char)	
     );
     
 
    
     //baud 9600
     uart uart (
-    .clk(clk_65Mhz),
-    .reset(rst),
-    .rx(rx),
-    .tx(tx),
-    .led(led),
-    .r_data(r_data),
-    .rx_empty(rx_empty)
+	    .clk(clk_65Mhz),
+	    .reset(rst),
+	    .rx(rx),
+	    .tx(tx),
+	    .led(led),
+	    .r_data(r_data),
+	    .rx_empty(rx_empty)
     );
     
     keyboard_driver_moving keyboard_driver_moving (
@@ -234,6 +235,7 @@ module MAIN(
   			.vsync_out(vsync),
   			.hsync_out(hsync),
   			.menu_interrupt_out(menu_interrupt_menu_to_rect),
-  			.iterator_debug(iterator_debug)	
+  			.iterator_debug(iterator_debug),
+  			.game_start(game_start)	
   );             
 endmodule

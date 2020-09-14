@@ -23,6 +23,7 @@
 module grid_register(
     input wire clk, 
     input wire rst,
+    input wire game_start,
     input wire [15:0] vcount,
     input wire [15:0] hcount,
     output reg [15:0] vcount_out,
@@ -69,11 +70,13 @@ module grid_register(
 
  
     localparam
-        INIT = 1'b0,  
-        READnWRITE = 1,
-        RESET = 2,
-        ARENA_GENERATOR = 3;
-    reg [3:0] state = INIT;
+    		INTRO = 0,
+        INIT = 1,  
+        READnWRITE = 2,
+        RESET = 3,
+        ARENA_GENERATOR = 4;
+        
+    reg [3:0] state;
     reg [3:0] state_nxt;
     reg [15:0] register_reseter_comb, register_reseter_seq;
     
@@ -83,11 +86,110 @@ module grid_register(
     always@(*)
         begin
         rgb_nxt = rgb_in;
-        state_nxt = state;
+        state_nxt = INTRO;
         rect_read_out = 0;
     			for (comb_iterator = 1; comb_iterator < 769; comb_iterator = comb_iterator +1) 
     				grid_register_nxt[comb_iterator] = grid_register[comb_iterator];	
         		case(state)
+        			INTRO:
+        					begin
+	        					if(game_start == 1) state_nxt = INIT;
+	        					else state_nxt = INTRO;	
+	        					for(comb_iterator = 1; comb_iterator <= 768; comb_iterator = comb_iterator + 1) 
+												begin
+													grid_register_nxt[comb_iterator] = NULL;  //GRID RESET
+												end
+												//S - letter
+										grid_register_nxt[5*GRID_SIZE_X+3] = SNAKE;
+										grid_register_nxt[5*GRID_SIZE_X+4] = SNAKE;
+										grid_register_nxt[5*GRID_SIZE_X+5] = SNAKE;
+										grid_register_nxt[5*GRID_SIZE_X+6] = SNAKE;
+										grid_register_nxt[6*GRID_SIZE_X+3] = SNAKE;
+										grid_register_nxt[7*GRID_SIZE_X+3] = SNAKE;
+										grid_register_nxt[8*GRID_SIZE_X+3] = SNAKE;
+										grid_register_nxt[8*GRID_SIZE_X+4] = SNAKE;
+										grid_register_nxt[8*GRID_SIZE_X+5] = SNAKE;
+										grid_register_nxt[8*GRID_SIZE_X+6] = SNAKE;
+										grid_register_nxt[9*GRID_SIZE_X+6] = SNAKE;
+										grid_register_nxt[10*GRID_SIZE_X+6] = SNAKE;
+										grid_register_nxt[11*GRID_SIZE_X+6] = SNAKE;
+										grid_register_nxt[11*GRID_SIZE_X+5] = SNAKE;
+										grid_register_nxt[11*GRID_SIZE_X+4] = SNAKE;
+										grid_register_nxt[11*GRID_SIZE_X+3] = SNAKE;
+											//N - letter
+										grid_register_nxt[5*GRID_SIZE_X+8] = SNAKE;
+										grid_register_nxt[6*GRID_SIZE_X+8] = SNAKE;
+										grid_register_nxt[7*GRID_SIZE_X+8] = SNAKE;
+										grid_register_nxt[8*GRID_SIZE_X+8] = SNAKE;
+										grid_register_nxt[9*GRID_SIZE_X+8] = SNAKE;
+										grid_register_nxt[10*GRID_SIZE_X+8] = SNAKE;
+										grid_register_nxt[11*GRID_SIZE_X+8] = SNAKE;
+										grid_register_nxt[6*GRID_SIZE_X+9] = SNAKE;
+										grid_register_nxt[7*GRID_SIZE_X+9] = SNAKE;
+										grid_register_nxt[8*GRID_SIZE_X+10] = SNAKE;
+										grid_register_nxt[9*GRID_SIZE_X+11] = SNAKE;
+										grid_register_nxt[10*GRID_SIZE_X+11] = SNAKE;
+										grid_register_nxt[5*GRID_SIZE_X+12] = SNAKE;
+										grid_register_nxt[6*GRID_SIZE_X+12] = SNAKE;
+										grid_register_nxt[7*GRID_SIZE_X+12] = SNAKE;
+										grid_register_nxt[8*GRID_SIZE_X+12] = SNAKE;
+										grid_register_nxt[9*GRID_SIZE_X+12] = SNAKE;
+										grid_register_nxt[10*GRID_SIZE_X+12] = SNAKE;
+										grid_register_nxt[11*GRID_SIZE_X+12] = SNAKE;
+										
+										//A - letter
+										grid_register_nxt[5*GRID_SIZE_X+15] = SNAKE;
+										grid_register_nxt[5*GRID_SIZE_X+16] = SNAKE;
+										grid_register_nxt[6*GRID_SIZE_X+14] = SNAKE;
+										grid_register_nxt[7*GRID_SIZE_X+14] = SNAKE;
+										grid_register_nxt[8*GRID_SIZE_X+14] = SNAKE;
+										grid_register_nxt[9*GRID_SIZE_X+14] = SNAKE;
+										grid_register_nxt[10*GRID_SIZE_X+14] = SNAKE;
+										grid_register_nxt[11*GRID_SIZE_X+14] = SNAKE;
+										grid_register_nxt[6*GRID_SIZE_X+17] = SNAKE;
+										grid_register_nxt[7*GRID_SIZE_X+17] = SNAKE;
+										grid_register_nxt[8*GRID_SIZE_X+17] = SNAKE;
+										grid_register_nxt[9*GRID_SIZE_X+17] = SNAKE;
+										grid_register_nxt[10*GRID_SIZE_X+17] = SNAKE;
+										grid_register_nxt[11*GRID_SIZE_X+17] = SNAKE;
+										grid_register_nxt[9*GRID_SIZE_X+15] = SNAKE;
+										grid_register_nxt[9*GRID_SIZE_X+16] = SNAKE;
+										
+										//K - letter
+										grid_register_nxt[5*GRID_SIZE_X+19] = SNAKE;
+										grid_register_nxt[6*GRID_SIZE_X+19] = SNAKE;
+										grid_register_nxt[7*GRID_SIZE_X+19] = SNAKE;
+										grid_register_nxt[8*GRID_SIZE_X+19] = SNAKE;
+										grid_register_nxt[9*GRID_SIZE_X+19] = SNAKE;
+										grid_register_nxt[10*GRID_SIZE_X+19] = SNAKE;
+										grid_register_nxt[11*GRID_SIZE_X+19] = SNAKE;
+										grid_register_nxt[8*GRID_SIZE_X+20] = SNAKE;
+										grid_register_nxt[7*GRID_SIZE_X+21] = SNAKE;
+										grid_register_nxt[6*GRID_SIZE_X+22] = SNAKE;
+										grid_register_nxt[5*GRID_SIZE_X+23] = SNAKE;
+										grid_register_nxt[9*GRID_SIZE_X+21] = SNAKE;
+										grid_register_nxt[10*GRID_SIZE_X+22] = SNAKE;
+										grid_register_nxt[11*GRID_SIZE_X+23] = SNAKE;
+										
+										//E - letter
+										
+									  grid_register_nxt[5*GRID_SIZE_X+25] = SNAKE;
+										grid_register_nxt[6*GRID_SIZE_X+25] = SNAKE;
+										grid_register_nxt[7*GRID_SIZE_X+25] = SNAKE;
+										grid_register_nxt[8*GRID_SIZE_X+25] = SNAKE;
+										grid_register_nxt[9*GRID_SIZE_X+25] = SNAKE;
+										grid_register_nxt[10*GRID_SIZE_X+25] = SNAKE;
+										grid_register_nxt[11*GRID_SIZE_X+25] = SNAKE;
+									  grid_register_nxt[5*GRID_SIZE_X+26] = SNAKE;
+									  grid_register_nxt[5*GRID_SIZE_X+27] = SNAKE;
+									  grid_register_nxt[5*GRID_SIZE_X+28] = SNAKE;
+									  grid_register_nxt[8*GRID_SIZE_X+26] = SNAKE;
+									  grid_register_nxt[8*GRID_SIZE_X+27] = SNAKE;
+									  grid_register_nxt[8*GRID_SIZE_X+28] = SNAKE;
+									  grid_register_nxt[11*GRID_SIZE_X+26] = SNAKE;
+									  grid_register_nxt[11*GRID_SIZE_X+27] = SNAKE;
+									  grid_register_nxt[11*GRID_SIZE_X+28] = SNAKE;
+									end  
            		 INIT:
               		begin
               			state_nxt = ARENA_GENERATOR;
@@ -121,12 +223,8 @@ module grid_register(
                		end
             		RESET:
                	  begin        
-                    state_nxt = INIT;
+                    state_nxt = INTRO;
                   end
-								default:
-									begin
-										state_nxt = INIT;
-									end	
         		endcase        
             if(vcount >= 0 && vcount <= 768 && hcount >= 0 && hcount <= 1024)
              begin
