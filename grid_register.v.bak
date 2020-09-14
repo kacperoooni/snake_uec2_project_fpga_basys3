@@ -29,6 +29,8 @@ module grid_register(
     output reg [15:0] vcount_out,
     output reg [15:0] hcount_out,
     
+    input wire [11:0] snake_color,
+    
     input wire hsync_in,vsync_in,
     output reg hsync_out,vsync_out,
     
@@ -100,76 +102,76 @@ module grid_register(
 													grid_register_nxt[comb_iterator] = NULL;  //GRID RESET
 												end
 												//S - letter
-										grid_register_nxt[5*GRID_SIZE_X+3] = SNAKE;
 										grid_register_nxt[5*GRID_SIZE_X+4] = SNAKE;
 										grid_register_nxt[5*GRID_SIZE_X+5] = SNAKE;
 										grid_register_nxt[5*GRID_SIZE_X+6] = SNAKE;
-										grid_register_nxt[6*GRID_SIZE_X+3] = SNAKE;
-										grid_register_nxt[7*GRID_SIZE_X+3] = SNAKE;
-										grid_register_nxt[8*GRID_SIZE_X+3] = SNAKE;
+										grid_register_nxt[5*GRID_SIZE_X+7] = SNAKE;
+										grid_register_nxt[6*GRID_SIZE_X+4] = SNAKE;
+										grid_register_nxt[7*GRID_SIZE_X+4] = SNAKE;
 										grid_register_nxt[8*GRID_SIZE_X+4] = SNAKE;
 										grid_register_nxt[8*GRID_SIZE_X+5] = SNAKE;
 										grid_register_nxt[8*GRID_SIZE_X+6] = SNAKE;
-										grid_register_nxt[9*GRID_SIZE_X+6] = SNAKE;
-										grid_register_nxt[10*GRID_SIZE_X+6] = SNAKE;
+										grid_register_nxt[8*GRID_SIZE_X+7] = SNAKE;
+										grid_register_nxt[9*GRID_SIZE_X+7] = SNAKE;
+										grid_register_nxt[10*GRID_SIZE_X+7] = SNAKE;
+										grid_register_nxt[11*GRID_SIZE_X+7] = SNAKE;
 										grid_register_nxt[11*GRID_SIZE_X+6] = SNAKE;
 										grid_register_nxt[11*GRID_SIZE_X+5] = SNAKE;
 										grid_register_nxt[11*GRID_SIZE_X+4] = SNAKE;
-										grid_register_nxt[11*GRID_SIZE_X+3] = SNAKE;
 											//N - letter
-										grid_register_nxt[5*GRID_SIZE_X+8] = SNAKE;
-										grid_register_nxt[6*GRID_SIZE_X+8] = SNAKE;
-										grid_register_nxt[7*GRID_SIZE_X+8] = SNAKE;
-										grid_register_nxt[8*GRID_SIZE_X+8] = SNAKE;
-										grid_register_nxt[9*GRID_SIZE_X+8] = SNAKE;
-										grid_register_nxt[10*GRID_SIZE_X+8] = SNAKE;
-										grid_register_nxt[11*GRID_SIZE_X+8] = SNAKE;
+										grid_register_nxt[5*GRID_SIZE_X+9] = SNAKE;
 										grid_register_nxt[6*GRID_SIZE_X+9] = SNAKE;
 										grid_register_nxt[7*GRID_SIZE_X+9] = SNAKE;
-										grid_register_nxt[8*GRID_SIZE_X+10] = SNAKE;
-										grid_register_nxt[9*GRID_SIZE_X+11] = SNAKE;
-										grid_register_nxt[10*GRID_SIZE_X+11] = SNAKE;
-										grid_register_nxt[5*GRID_SIZE_X+12] = SNAKE;
-										grid_register_nxt[6*GRID_SIZE_X+12] = SNAKE;
-										grid_register_nxt[7*GRID_SIZE_X+12] = SNAKE;
-										grid_register_nxt[8*GRID_SIZE_X+12] = SNAKE;
+										grid_register_nxt[8*GRID_SIZE_X+9] = SNAKE;
+										grid_register_nxt[9*GRID_SIZE_X+9] = SNAKE;
+										grid_register_nxt[10*GRID_SIZE_X+9] = SNAKE;
+										grid_register_nxt[11*GRID_SIZE_X+9] = SNAKE;
+										grid_register_nxt[6*GRID_SIZE_X+10] = SNAKE;
+										grid_register_nxt[7*GRID_SIZE_X+10] = SNAKE;
+										grid_register_nxt[8*GRID_SIZE_X+11] = SNAKE;
 										grid_register_nxt[9*GRID_SIZE_X+12] = SNAKE;
 										grid_register_nxt[10*GRID_SIZE_X+12] = SNAKE;
-										grid_register_nxt[11*GRID_SIZE_X+12] = SNAKE;
+										grid_register_nxt[5*GRID_SIZE_X+13] = SNAKE;
+										grid_register_nxt[6*GRID_SIZE_X+13] = SNAKE;
+										grid_register_nxt[7*GRID_SIZE_X+13] = SNAKE;
+										grid_register_nxt[8*GRID_SIZE_X+13] = SNAKE;
+										grid_register_nxt[9*GRID_SIZE_X+13] = SNAKE;
+										grid_register_nxt[10*GRID_SIZE_X+13] = SNAKE;
+										grid_register_nxt[11*GRID_SIZE_X+13] = SNAKE;
 										
 										//A - letter
-										grid_register_nxt[5*GRID_SIZE_X+15] = SNAKE;
 										grid_register_nxt[5*GRID_SIZE_X+16] = SNAKE;
-										grid_register_nxt[6*GRID_SIZE_X+14] = SNAKE;
-										grid_register_nxt[7*GRID_SIZE_X+14] = SNAKE;
-										grid_register_nxt[8*GRID_SIZE_X+14] = SNAKE;
-										grid_register_nxt[9*GRID_SIZE_X+14] = SNAKE;
-										grid_register_nxt[10*GRID_SIZE_X+14] = SNAKE;
-										grid_register_nxt[11*GRID_SIZE_X+14] = SNAKE;
-										grid_register_nxt[6*GRID_SIZE_X+17] = SNAKE;
-										grid_register_nxt[7*GRID_SIZE_X+17] = SNAKE;
-										grid_register_nxt[8*GRID_SIZE_X+17] = SNAKE;
-										grid_register_nxt[9*GRID_SIZE_X+17] = SNAKE;
-										grid_register_nxt[10*GRID_SIZE_X+17] = SNAKE;
-										grid_register_nxt[11*GRID_SIZE_X+17] = SNAKE;
+										grid_register_nxt[5*GRID_SIZE_X+17] = SNAKE;
+										grid_register_nxt[6*GRID_SIZE_X+15] = SNAKE;
+										grid_register_nxt[7*GRID_SIZE_X+15] = SNAKE;
+										grid_register_nxt[8*GRID_SIZE_X+15] = SNAKE;
 										grid_register_nxt[9*GRID_SIZE_X+15] = SNAKE;
+										grid_register_nxt[10*GRID_SIZE_X+15] = SNAKE;
+										grid_register_nxt[11*GRID_SIZE_X+15] = SNAKE;
+										grid_register_nxt[6*GRID_SIZE_X+18] = SNAKE;
+										grid_register_nxt[7*GRID_SIZE_X+18] = SNAKE;
+										grid_register_nxt[8*GRID_SIZE_X+18] = SNAKE;
+										grid_register_nxt[9*GRID_SIZE_X+18] = SNAKE;
+										grid_register_nxt[10*GRID_SIZE_X+18] = SNAKE;
+										grid_register_nxt[11*GRID_SIZE_X+18] = SNAKE;
 										grid_register_nxt[9*GRID_SIZE_X+16] = SNAKE;
+										grid_register_nxt[9*GRID_SIZE_X+17] = SNAKE;
 										
 										//K - letter
-										grid_register_nxt[5*GRID_SIZE_X+19] = SNAKE;
-										grid_register_nxt[6*GRID_SIZE_X+19] = SNAKE;
-										grid_register_nxt[7*GRID_SIZE_X+19] = SNAKE;
-										grid_register_nxt[8*GRID_SIZE_X+19] = SNAKE;
-										grid_register_nxt[9*GRID_SIZE_X+19] = SNAKE;
-										grid_register_nxt[10*GRID_SIZE_X+19] = SNAKE;
-										grid_register_nxt[11*GRID_SIZE_X+19] = SNAKE;
+										grid_register_nxt[5*GRID_SIZE_X+20] = SNAKE;
+										grid_register_nxt[6*GRID_SIZE_X+20] = SNAKE;
+										grid_register_nxt[7*GRID_SIZE_X+20] = SNAKE;
 										grid_register_nxt[8*GRID_SIZE_X+20] = SNAKE;
-										grid_register_nxt[7*GRID_SIZE_X+21] = SNAKE;
-										grid_register_nxt[6*GRID_SIZE_X+22] = SNAKE;
-										grid_register_nxt[5*GRID_SIZE_X+23] = SNAKE;
-										grid_register_nxt[9*GRID_SIZE_X+21] = SNAKE;
-										grid_register_nxt[10*GRID_SIZE_X+22] = SNAKE;
-										grid_register_nxt[11*GRID_SIZE_X+23] = SNAKE;
+										grid_register_nxt[9*GRID_SIZE_X+20] = SNAKE;
+										grid_register_nxt[10*GRID_SIZE_X+20] = SNAKE;
+										grid_register_nxt[11*GRID_SIZE_X+20] = SNAKE;
+										grid_register_nxt[8*GRID_SIZE_X+21] = SNAKE;
+										grid_register_nxt[7*GRID_SIZE_X+22] = SNAKE;
+										grid_register_nxt[6*GRID_SIZE_X+23] = SNAKE;
+										grid_register_nxt[5*GRID_SIZE_X+24] = SNAKE;
+										grid_register_nxt[9*GRID_SIZE_X+22] = SNAKE;
+										grid_register_nxt[10*GRID_SIZE_X+23] = SNAKE;
+										grid_register_nxt[11*GRID_SIZE_X+24] = SNAKE;
 										
 										//E - letter
 										
@@ -236,7 +238,7 @@ module grid_register(
                     end
                   SNAKE:
                     begin
-                      rgb_nxt = 12'h0_f_0;
+                      rgb_nxt = snake_color;
           //							rgb_nxt = 12'hC_2_B;
                     end
                   ROCK:

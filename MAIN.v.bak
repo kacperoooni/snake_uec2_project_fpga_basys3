@@ -107,6 +107,7 @@ module MAIN(
 		wire hsync_score_to_menu,vsync_score_to_menu;
 		wire menu_interrupt_menu_to_rect;
 		wire [15:0] iterator_debug;
+		wire [1:0] difficulty_level;
     
     grid_register grid_register (
        .clk(clk_65Mhz),
@@ -124,7 +125,8 @@ module MAIN(
        .vsync_in(vsync_rgb_controller_grid_register),
        .hsync_out(hsync_grid_register_grid_edges),
        .vsync_out(vsync_grid_register_grid_edges),
-       .game_start(game_start)
+       .game_start(game_start),
+       .snake_color(snake_color)
        );
     
     rect_controller rect_controller (
@@ -143,7 +145,8 @@ module MAIN(
 	     .sseg(sseg),
 	     .an(an),
 	     .r_data(r_data_debug),
-	     .iterator_debug(iterator_debug)
+	     .iterator_debug(iterator_debug),
+	     .difficulty_level_in(difficulty_level)
        );  
        
        
@@ -183,7 +186,7 @@ module MAIN(
     );   
        
      
-  draw_rect_char draw_rect_char (
+  draw_rect_char score_display (
    
          .clk(clk_65Mhz),
     
@@ -206,11 +209,12 @@ module MAIN(
          .addr_x_w(char_code_score)
         );   
   
-  char_rom char_rom (
+  char_rom char_rom_score (
 		    .clk(clk_65Mhz),
 		    .char_xy(char_number_score),
 		    .char_code(char_code_score),
-		    .score_in(score)
+		    .score_in(score),
+		    .game_start(game_start)
     );
     
   
@@ -236,6 +240,8 @@ module MAIN(
   			.hsync_out(hsync),
   			.menu_interrupt_out(menu_interrupt_menu_to_rect),
   			.iterator_debug(iterator_debug),
-  			.game_start(game_start),	
+  			.game_start(game_start),
+  			.difficulty_level(difficulty_level),
+  			.snake_color(snake_color)	
   );             
 endmodule

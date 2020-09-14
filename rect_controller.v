@@ -31,6 +31,7 @@ module rect_controller(
 		input wire turbo_button,
 		input wire [7:0] r_data,
 		input wire menu_interrupt, game_start,
+		input wire [1:0] difficulty_level_in,
 		
 		
 	
@@ -43,6 +44,8 @@ module rect_controller(
 	
 	
     );
+    wire [2:0] difficulty_level;
+    assign difficulty_level = difficulty_level_in + 1;
    localparam 
       GRID_SIZE_X = 32,
       GRID_SIZE_Y = 24,
@@ -82,7 +85,7 @@ module rect_controller(
 	
 	localparam 
 	SNAKE_REG_SIZE = 127,//+1
-	DIFFICULTY = 3,
+	//DIFFICULTY = 3,
 	SNAKE_TURBO = 10000000; 
 	
    
@@ -246,9 +249,9 @@ module rect_controller(
 							snake_size_nxt = snake_size + 5'd1;
 							state_nxt = SNACK_GENERATE;
 							snake_writer_iterator_nxt = 0;
-							score_nxt = score_out + (DIFFICULTY*16'd10)/2;
-							if (snake_speed <= 20000000/DIFFICULTY) snake_speed_nxt = snake_speed;
-							else 	snake_speed_nxt = snake_speed - DIFFICULTY*1000000;
+							score_nxt = score_out + (difficulty_level*16'd10)/2;
+							if (snake_speed <= 20000000/difficulty_level) snake_speed_nxt = snake_speed;
+							else 	snake_speed_nxt = snake_speed - difficulty_level*1000000;
 						end
 
 					GAME_OVER:
