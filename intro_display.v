@@ -1,0 +1,139 @@
+`timescale 1ns / 1ps
+//////////////////////////////////////////////////////////////////////////////////
+// Company: 
+// Engineer: 
+// 
+// Create Date: 15.09.2020 16:39:31
+// Design Name: 
+// Module Name: intro_display
+// Project Name: 
+// Target Devices: 
+// Tool Versions: 
+// Description: 
+// 
+// Dependencies: 
+// 
+// Revision:
+// Revision 0.01 - File Created
+// Additional Comments:
+// 
+//////////////////////////////////////////////////////////////////////////////////
+
+
+
+module intro_display(
+		input wire clk,
+		input wire rst,
+		input wire [15:0] vcount, hcount,
+		output reg [15:0] vcount_out, hcount_out,
+		input wire vsync_in,hsync_in,
+		output reg hsync_out,vsync_out,
+		input wire [11:0] rgb_in,
+		output reg [11:0] rgb_out,
+		input wire game_start
+    );
+    
+    localparam
+    INIT = 0,
+    WAIT_FOR_EVENT = 1,
+    GAME_START = 2;
+    
+    localparam
+    KEY_1 = 8'h31,
+    KEY_2 = 8'h32,
+    KEY_3 = 8'h33,
+    KEY_4 = 8'h34,
+    ESC = 8'h1b,
+    ENTER= 8'h0d;
+    
+    reg [3:0] state_nxt,state;
+    
+    wire [15:0] vcount_nxt, hcount_nxt;
+   	wire vsync_nxt, hsync_nxt;
+   	reg [11:0] rgb_nxt;
+   	wire [11:0] rgb_rect;
+    
+    always@(*)
+			begin
+				state_nxt = INIT;
+				rgb_nxt = rgb_in_delayed;    
+    		case(state)
+    			INIT:
+    				begin
+	    				state_nxt = WAIT_FOR_EVENT;
+    				end
+    			WAIT_FOR_EVENT:
+    				begin
+	    				if(game_start == 1) state_nxt = GAME_START;	
+	    				else state_nxt = WAIT_FOR_EVENT;
+	    				rgb_nxt = rgb_rect;
+	    			end	
+    			GAME_START:
+    				begin
+    					state_nxt = GAME_START;
+    				end
+    		endcase
+    		if(rst) state_nxt = INIT;	
+			end
+
+		always@(posedge clk)
+    	begin
+    		state <= state_nxt;
+    		rgb_out <= rgb_nxt;
+   			vcount_out <= vcount_nxt;
+   			hcount_out <= hcount_nxt;
+   			vsync_out <= vsync_nxt;
+    		hsync_out <= hsync_nxt;
+    	end
+    	
+    	defparam draw_rect_char_intro.FONT_RECT_WIDTH = 264;
+    	defparam draw_rect_char_intro.FONT_RECT_HEIGHT = 100;
+    	defparam draw_rect_char_intro.FONT_BACKGROUND = 0;
+	    defparam draw_rect_char_intro.FONT_START_X = 380;
+	    defparam draw_rect_char_intro.FONT_START_Y = 450;
+
+
+
+	    wire [11:0] rgb_in_delayed;
+
+	    defparam delay_rgb_in.WIDTH = 12;
+	    defparam delay_rgb_in.CLK_DEL = 4;
+
+	    delay delay_rgb_in (
+	        .clk(clk),
+	        .din(rgb_in),
+	        .dout(rgb_in_delayed),
+	        .rst(rst)
+
+	     );
+
+    	
+    	
+    	
+    	
+    	
+    	wire [7:0] char_number, char_code;
+    	draw_rect_char draw_rect_char_intro (
+         .clk(clk),
+         .hsync_in(hsync_in),
+         .vsync_in(vsync_in),
+         .vcount_in(vcount),
+         .hcount_in(hcount),
+         .rgb_in(rgb_in),
+         .hsync_out(hsync_nxt),
+         .vsync_out(vsync_nxt),
+         .vcount_out(vcount_nxt),
+       	 .hcount_out(hcount_nxt),
+         .rgb_out(rgb_rect),
+         .rst(rst),
+         .char_xy_w(char_number),
+         .addr_x_w(char_code)
+        );
+        
+    char_rom_intro char_rom_intro(
+    		.clk(clk),
+		    .char_xy(char_number),
+		    .char_code(char_code)
+		    );
+    		
+endmodule

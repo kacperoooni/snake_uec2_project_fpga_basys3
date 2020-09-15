@@ -34,8 +34,8 @@ module draw_rect_char
     input wire clk,
 
     input wire hsync_in,
-    input wire vblnk_in,
-    input wire hblnk_in,
+  //  input wire vblnk_in,
+  //  input wire hblnk_in,
     input wire vsync_in,
     input wire [15:0] vcount_in,
     input wire [15:0] hcount_in,
@@ -45,8 +45,8 @@ module draw_rect_char
     input wire [7:0] addr_x_w,
     
     output wire hsync_out,
-    output wire vblnk_out,
-    output wire hblnk_out,
+  //  output wire vblnk_out,
+  // output wire hblnk_out,
     output wire vsync_out,
     output wire [15:0] vcount_out,
     output wire [15:0] hcount_out,
@@ -235,7 +235,8 @@ module draw_rect_char
     delay delay_hsync (
         .clk(clk),
         .din(hsync_in),
-        .dout(hsync_out)
+        .dout(hsync_out),
+        .rst(rst)
         
      );
     defparam delay_hsync.WIDTH = 1;
@@ -244,15 +245,17 @@ module draw_rect_char
     delay delay_vsync (
         .clk(clk),
         .din(vsync_in),
-        .dout(vsync_out)
+        .dout(vsync_out),
+        .rst(rst)
      );
      defparam delay_vsync.WIDTH = 1;
      defparam delay_vsync.CLK_DEL = CLK_DELAY;
-         
+ /*        
      delay delay_vblnk (
          .clk(clk),
          .din(vblnk_in),
-         .dout(vblnk_out)
+         .dout(vblnk_out),
+         .rst(rst)
      );   
     defparam delay_vblnk.WIDTH = 1;
     defparam delay_vblnk.CLK_DEL = CLK_DELAY;
@@ -260,15 +263,17 @@ module draw_rect_char
     delay delay_hblnk (
          .clk(clk),
          .din(hblnk_in),
-         .dout(hblnk_out)
+         .dout(hblnk_out),
+         .rst(rst)
           );         
     defparam delay_hblnk.WIDTH = 1;
     defparam delay_hblnk.CLK_DEL = CLK_DELAY;
-    
+  */  
     delay delay_vcount (
          .clk(clk),
          .din(vcount_in),
-         .dout(vcount_out)
+         .dout(vcount_out),
+         .rst(rst)
           );
      defparam delay_vcount.WIDTH = 16;
      defparam delay_vcount.CLK_DEL = CLK_DELAY; 
@@ -276,7 +281,8 @@ module draw_rect_char
    delay delay_hcount (
          .clk(clk),
          .din(hcount_in),
-         .dout(hcount_out)
+         .dout(hcount_out),
+         .rst(rst)
           ); 
       defparam delay_hcount.WIDTH = 16;
       defparam delay_hcount.CLK_DEL = CLK_DELAY;
@@ -284,7 +290,8 @@ module draw_rect_char
    delay delay_rgb (
          .clk(clk),
          .din(rgb_in),
-         .dout(rgb_in_del)
+         .dout(rgb_in_del),
+         .rst(rst)
          ); 
        defparam delay_rgb.WIDTH = 12;
        defparam delay_rgb.CLK_DEL = CLK_DELAY-1;                                       

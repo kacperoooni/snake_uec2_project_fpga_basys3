@@ -22,7 +22,6 @@
 
 module char_rom_menu(
 input wire [7:0] char_xy,
-input wire [15:0] score_in,
 input wire clk,
 input wire [1:0] difficulty_level,
 input wire [11:0] snake_color,

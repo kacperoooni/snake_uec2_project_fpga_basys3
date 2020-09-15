@@ -29,7 +29,7 @@ input wire [11:0] snake_color,
 output reg [7:0] char_code
     );
     reg [7:0] addr_x;
-    reg [3:0] char_r,char_g,char_b;
+    reg [5:0] char_r,char_g,char_b;
     always @(posedge clk)
     begin
     char_code <= addr_x;

@@ -102,12 +102,17 @@ module MAIN(
 		wire [15:0] score;
 		wire [7:0] r_data, r_data_debug;
 		wire rx_empty;
-		wire [15:0] vcount_score_to_menu, hcount_score_to_menu;
-		wire [11:0] rgb_score_to_menu;
-		wire hsync_score_to_menu,vsync_score_to_menu;
+		wire [15:0] vcount_score_to_game_over, hcount_score_to_game_over;
+		wire [11:0] rgb_score_to_game_over;
+		wire hsync_score_to_game_over,vsync_score_to_game_over;
 		wire menu_interrupt_menu_to_rect;
 		wire [15:0] iterator_debug;
 		wire [1:0] difficulty_level;
+		wire [11:0] snake_color;
+		wire [15:0] vcount_game_over_to_intro, hcount_game_over_to_intro;
+		wire [15:0] vcount_intro_to_menu, hcount_intro_to_menu;
+    wire [11:0] rgb_game_over_to_intro,rgb_intro_to_menu;
+    wire vsync_game_over_to_intro, hsync_game_over_to_intro;
     
     grid_register grid_register (
        .clk(clk_65Mhz),
@@ -126,7 +131,8 @@ module MAIN(
        .hsync_out(hsync_grid_register_grid_edges),
        .vsync_out(vsync_grid_register_grid_edges),
        .game_start(game_start),
-       .snake_color(snake_color)
+       .snake_color(snake_color),
+       .game_restart(game_restart)
        );
     
     rect_controller rect_controller (
@@ -140,6 +146,8 @@ module MAIN(
 	     .score_out(score),
 	     .game_start(game_start),
 	     .menu_interrupt(menu_interrupt_menu_to_rect),
+	     .game_over(game_over),
+	     .game_restart(game_restart),
 	   //debug
 	     .debug_keys(sw),
 	     .sseg(sseg),
@@ -197,13 +205,13 @@ module MAIN(
          .vcount_in(vcount_grid_edge_rect_char),
          .hcount_in(hcount_grid_edge_rect_char),
          .rgb_in(rgb_grid_edge_rect_char),
-         .hsync_out(hsync_score_to_menu),
+         .hsync_out(hsync_score_to_game_over),
      //    .vblnk_out(vblnk_rect_char_rect),
      //    .hblnk_out(hblnk_rect_char_rect),
-         .vsync_out(vsync_score_to_menu),
-         .vcount_out(vcount_score_to_menu),
-         .hcount_out(hcount_score_to_menu),
-         .rgb_out(rgb_score_to_menu),
+         .vsync_out(vsync_score_to_game_over),
+         .vcount_out(vcount_score_to_game_over),
+         .hcount_out(hcount_score_to_game_over),
+         .rgb_out(rgb_score_to_game_over),
          .rst(rst),
          .char_xy_w(char_number_score),
          .addr_x_w(char_code_score)
@@ -217,6 +225,40 @@ module MAIN(
 		    .game_start(game_start)
     );
     
+  game_over_display game_over_display(
+  			.clk(clk_65Mhz),
+  			.rst(rst),
+  			.key(keydata_key_debouncer_to_keyboard_driver),
+  			.hcount(hcount_score_to_game_over),
+  			.vcount(vcount_score_to_game_over),
+  			.hsync_in(hsync_score_to_game_over),
+  			.vsync_in(vsync_score_to_game_over),
+  			.rgb_in(rgb_score_to_game_over),
+  			.hcount_out(hcount_game_over_to_intro),
+  			.vcount_out(vcount_game_over_to_intro),
+  			.rgb_out(rgb_game_over_to_intro),
+  			.vsync_out(vsync_game_over_to_intro),
+  			.hsync_out(hsync_game_over_to_intro),
+				.game_restart(game_restart),
+				.game_over(game_over)
+  );
+  
+  intro_display intro_display(
+  			.clk(clk_65Mhz),
+  			.rst(rst),
+  			.hcount(hcount_game_over_to_intro),
+  			.vcount(vcount_game_over_to_intro),
+  			.hsync_in(hsync_game_over_to_intro),
+  			.vsync_in(vsync_game_over_to_intro),
+  			.hcount_out(hcount_intro_to_menu),
+  			.vcount_out(vcount_intro_to_menu),
+  			.rgb_in(rgb_game_over_to_intro),
+  			.rgb_out(rgb_intro_to_menu),
+  			.vsync_out(vsync_intro_to_menu),
+  			.hsync_out(hsync_intro_to_menu),
+				.game_start(game_start)
+  );
+  
   
   key_debouncer key_debouncer (
   			.clk(clk_65Mhz),
@@ -230,11 +272,11 @@ module MAIN(
   			.clk(clk_65Mhz),
   			.rst(rst),
   			.key(keydata_key_debouncer_to_keyboard_driver),
-  			.hcount(hcount_grid_edge_rect_char),
-  			.vcount(vcount_grid_edge_rect_char),
-  			.hsync_in(hsync_score_to_menu),
-  			.vsync_in(vsync_score_to_menu),
-  			.rgb_in(rgb_score_to_menu),
+  			.hcount(hcount_intro_to_menu),
+  			.vcount(vcount_intro_to_menu),
+  			.hsync_in(hsync_intro_to_menu),
+  			.vsync_in(vsync_intro_to_menu),
+  			.rgb_in(rgb_intro_to_menu),
   			.rgb_out({r,g,b}),
   			.vsync_out(vsync),
   			.hsync_out(hsync),

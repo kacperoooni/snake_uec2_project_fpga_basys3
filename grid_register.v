@@ -24,6 +24,7 @@ module grid_register(
     input wire clk, 
     input wire rst,
     input wire game_start,
+    input wire game_restart,
     input wire [15:0] vcount,
     input wire [15:0] hcount,
     output reg [15:0] vcount_out,
@@ -67,8 +68,8 @@ module grid_register(
     assign {rect_read_x, rect_read_y} = rect_read_in;
     
  
-  reg [15:0] current_painted_rect;
-  reg [11:0] rgb_nxt;
+ 		reg [15:0] current_painted_rect;
+  	reg [11:0] rgb_nxt;
 
  
     localparam
@@ -209,18 +210,18 @@ module grid_register(
 												grid_register_nxt[comb_iterator] = ROCK;
 												grid_register_nxt[23*GRID_SIZE_X+comb_iterator] = ROCK;
 											end			
-										for(comb_iterator = 1; comb_iterator <= 24; comb_iterator = comb_iterator + 1) 
+										for(comb_iterator = 1; comb_iterator <= 23; comb_iterator = comb_iterator + 1) 
 											begin
 												grid_register_nxt[1+comb_iterator*32] = ROCK;
 												grid_register_nxt[32+comb_iterator*32] = ROCK;
-											end	
-													
+											end							
              			end			  
             		READnWRITE:
          			    begin
              				if (rect_write_y >= 0 && rect_write_y <= 32 && rect_write_x >= 0 && rect_write_x <= 32) grid_register_nxt[rect_write_y*GRID_SIZE_X+rect_write_x] = rect_write_function;
-               		  if (rect_read_y >= 0 && rect_read_y <= 32 && rect_read_x >= 0 && rect_read_x <= 32) 	rect_read_out = grid_register[rect_read_y*GRID_SIZE_X+rect_read_x];
+               		  if (rect_read_y >= 0 && rect_read_y <= 32 && rect_read_x >= 0 && rect_read_x <= 32) 	rect_read_out = grid_register[rect_read_y*GRID_SIZE_X+rect_read_x]; 
               			if (rst) state_nxt = RESET;
+              			else  if (game_restart == 1) state_nxt = INIT;
               		  else state_nxt = READnWRITE;                  
                		end
             		RESET:

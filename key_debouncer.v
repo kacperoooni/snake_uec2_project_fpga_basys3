@@ -20,9 +20,10 @@
 //////////////////////////////////////////////////////////////////////////////////
 module key_debouncer(
 	input wire clk,
+	input wire rst,
 	input wire rx_empty,
 	input wire [7:0] r_data,
-	output reg [7:0] r_data_debug,
+	output wire [7:0] r_data_debug,
 	output reg [7:0] key_data 
     );
     
@@ -30,7 +31,7 @@ module key_debouncer(
   INIT = 0,
   KEY_PRESSED = 1,
   KEY_RELASED = 2;
-  
+  assign r_data_debug = r_data;
   reg [3:0] state, state_nxt;
   reg [7:0] key_data_nxt;
 //  assign r_data_debug = key_data;  
@@ -40,8 +41,11 @@ module key_debouncer(
     if(rx_empty == 0)
     	begin 
     		key_data_nxt = r_data;
-    		r_data_debug = r_data;
-    	end	
+    	end
+    else if(rst)
+    	begin
+    		key_data_nxt = 0;
+    	end		
     else 
     	begin
     		key_data_nxt = 8'b0;

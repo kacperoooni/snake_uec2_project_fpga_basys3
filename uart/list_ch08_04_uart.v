@@ -14,7 +14,7 @@ module uart
    (
     input wire clk, reset,
     input wire  rx, //rd_uart, wr_uart,
-    input wire [7:0] w_data,
+  //  input wire [7:0] w_data,
     output wire  tx, rx_empty,
     output wire [7:0] r_data,
     output reg [7:0] word,
@@ -26,11 +26,11 @@ module uart
    wire tick, rx_done_tick, tx_done_tick;
    wire tx_empty, tx_fifo_not_empty;
    wire [7:0] tx_fifo_out, rx_data_out;
-   
+   wire [7:0] w_data;
    reg rd_uart, rd_uart_nxt;
   // wire [7:0] r_data;
    reg [7:0] word_nxt;
-   
+   assign w_data = 0;
 
    //body
    mod_m_counter #(.M(DVSR), .N(DVSR_BIT)) baud_gen_unit

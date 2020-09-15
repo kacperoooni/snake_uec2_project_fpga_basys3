@@ -36,7 +36,7 @@ module menu_display(
 		output reg [11:0] snake_color
     );
 		assign iterator_debug = iterator;
-    wire [7:0] char_number_score, char_code_score;
+    wire [7:0] char_number, char_code;
     reg menu_interrupt_nxt,game_start_nxt;
     wire [11:0] rgb_rect;
     reg [3:0] state,state_nxt;
@@ -141,7 +141,7 @@ module menu_display(
    		begin
    			rgb_out <= rgb_nxt;
    			vcount_out <= vcount_nxt;
-   			hcount_out <= vcount_nxt;
+   			hcount_out <= hcount_nxt;
    			vsync_out <= vsync_nxt;
     		hsync_out <= hsync_nxt;
     		state <= state_nxt;
@@ -155,7 +155,7 @@ module menu_display(
     defparam draw_rect_char_menu.FONT_BACKGROUND = 1;
     defparam draw_rect_char_menu.FONT_START_X = 448;
     defparam draw_rect_char_menu.FONT_START_Y = 256;
-    defparam draw_rect_char_menu.FONT_BACKGROUND_COLOR = 12'h7_7_7;
+    defparam draw_rect_char_menu.FONT_BACKGROUND_COLOR = 12'h5_5_5;
 
 
     wire [11:0] rgb_in_delayed;
@@ -166,7 +166,8 @@ module menu_display(
     delay delay_rgb_in (
         .clk(clk),
         .din(rgb_in),
-        .dout(rgb_in_delayed)
+        .dout(rgb_in_delayed),
+        .rst(rst)
 
      );
 
@@ -185,13 +186,13 @@ module menu_display(
        	 .hcount_out(hcount_nxt),
          .rgb_out(rgb_rect),
          .rst(rst),
-         .char_xy_w(char_number_score),
-         .addr_x_w(char_code_score)
+         .char_xy_w(char_number),
+         .addr_x_w(char_code)
         );
     char_rom_menu char_rom_menu(
     		.clk(clk),
-		    .char_xy(char_number_score),
-		    .char_code(char_code_score),
+		    .char_xy(char_number),
+		    .char_code(char_code),
 		    .difficulty_level(difficulty_level),
 		    .snake_color(snake_color)
 		    );

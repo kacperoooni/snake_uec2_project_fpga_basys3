@@ -1,0 +1,118 @@
+`timescale 1ns / 1ps
+//////////////////////////////////////////////////////////////////////////////////
+// Company: 
+// Engineer: 
+// 
+// Create Date: 15.09.2020 18:06:17
+// Design Name: 
+// Module Name: char_rom_intro
+// Project Name: 
+// Target Devices: 
+// Tool Versions: 
+// Description: 
+// 
+// Dependencies: 
+// 
+// Revision:
+// Revision 0.01 - File Created
+// Additional Comments:
+// 
+//////////////////////////////////////////////////////////////////////////////////
+
+
+module char_rom_intro(
+	input wire [7:0] char_xy,
+	input wire clk,
+	output reg [7:0] char_code
+    );
+    reg [7:0] addr_x;
+    always @(posedge clk)
+    begin
+    char_code <= addr_x;
+    end
+    
+    always@(*)
+    begin
+        case (char_xy)
+							8'd06: addr_x = 8'h50; //P	
+							8'd07: addr_x = 8'h52; //R	
+							8'd08: addr_x = 8'h45; //E	
+							8'd09: addr_x = 8'h53; //S	
+							8'd10: addr_x = 8'h53; //S
+							8'd11: addr_x = 8'h20; // 	
+							8'd12: addr_x = 8'h45; //E	
+							8'd13: addr_x = 8'h4E; //N	
+							8'd14: addr_x = 8'h54; //T	
+							8'd15: addr_x = 8'h45; //E
+							8'd16: addr_x = 8'h52; //R	
+							8'd17: addr_x = 8'h20; //
+							8'd18: addr_x = 8'h54; //T	
+							8'd19: addr_x = 8'h4f; //O	
+							8'd20: addr_x = 8'h20; //	
+							8'd21: addr_x = 8'h53; //S	
+							8'd22: addr_x = 8'h54; //T	
+							8'd23: addr_x = 8'h41; //A	
+							8'd24: addr_x = 8'h52; //R	
+							8'd25: addr_x = 8'h54; //T	
+							8'd26: addr_x = 8'h21; //!
+							
+							
+							8'd132: addr_x = 8'h43; //C
+							8'd133: addr_x = 8'h4F; //O
+							8'd134: addr_x = 8'h4e; //N
+							8'd135: addr_x = 8'h54; //T
+							8'd136: addr_x = 8'h52; //R
+							8'd137: addr_x = 8'h4f; //O
+							8'd138: addr_x = 8'h4c; //L
+							8'd139: addr_x = 8'h20; //
+							8'd140: addr_x = 8'h53; //S
+							8'd141: addr_x = 8'h4e; //N
+							8'd142: addr_x = 8'h41; //A
+							8'd143: addr_x = 8'h4b; //K
+							8'd144: addr_x = 8'h45; //E
+							8'd145: addr_x = 8'h20; //
+							8'd146: addr_x = 8'h55; //U
+							8'd147: addr_x = 8'h53; //S
+							8'd148: addr_x = 8'h49; //I
+							8'd149: addr_x = 8'h4e; //N
+							8'd150: addr_x = 8'h47; //G
+							8'd151: addr_x = 8'h20; //
+							8'd152: addr_x = 8'h4e; //N
+							8'd153: addr_x = 8'h55; //U
+							8'd154: addr_x = 8'h4d; //M
+							8'd155: addr_x = 8'h45; //E	
+							8'd156: addr_x = 8'h52; //R
+							8'd157: addr_x = 8'h49; //I
+							8'd158: addr_x = 8'h43; //C
+							8'd159: addr_x = 8'h20; //
+							8'd160: addr_x = 8'h4b; //K	
+							8'd161: addr_x = 8'h45; //E
+							8'd162: addr_x = 8'h59; //Y
+							8'd163: addr_x = 8'h53; //S	
+							
+							8'd165: addr_x = 8'h45; //E
+							8'd166: addr_x = 8'h53; //S
+							8'd167: addr_x = 8'h43; //C
+							8'd168: addr_x = 8'h20; // 
+							8'd169: addr_x = 8'h2d; //-
+							8'd170: addr_x = 8'h20; //	
+							8'd171: addr_x = 8'h4d; //M
+							8'd172: addr_x = 8'h45; //E
+							8'd173: addr_x = 8'h4e; //N	
+							8'd174: addr_x = 8'h55; //U
+							
+							
+							
+							8'd176: addr_x = 8'h53; //S	
+							8'd177: addr_x = 8'h45; //E
+							8'd178: addr_x = 8'h59; //Y
+							8'd179: addr_x = 8'h53; //S	
+							
+							
+							
+											
+              default: addr_x = 8'h20;					 			   
+        endcase
+        end
+endmodule
+  
