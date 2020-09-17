@@ -23,8 +23,7 @@
 module keyboard_driver_moving(
 		input wire [7:0] word_in,
 		input wire clk, rst,
-		output reg [7:0] key,
-		output reg turbo_button
+		output reg [7:0] key
     );
     
     localparam
@@ -47,12 +46,10 @@ module keyboard_driver_moving(
     
     reg [3:0] state, state_nxt;
     reg [7:0] key_nxt;
-    reg turbo_button_nxt;
     
     always@(*)
     	begin
     		state_nxt = INIT;
-    		turbo_button_nxt = 0;
     		key_nxt = key;
     		case(state)
 	    		INIT:
@@ -106,10 +103,6 @@ module keyboard_driver_moving(
 		    								if(key != UP_LEFT)	
 		    									state_nxt = LATCH_KEY;
 	    								end	
-	    							MIDDLE:
-	    								begin
-	    									turbo_button_nxt = 1;
-	    								end	
 	    							default:
 	    								begin end	
 	    							endcase	
@@ -127,7 +120,6 @@ module keyboard_driver_moving(
     
     always@(posedge clk)
     	begin
-    		turbo_button <= turbo_button_nxt;
     		state <= state_nxt;
     		key <= key_nxt;
     	end	

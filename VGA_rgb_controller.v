@@ -20,7 +20,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module VGA_rgb_controller(
+module VGA_background_controller(
     input wire [15:0] hcount_in,
     input wire hsync_in,
     input wire hblnk_in,

@@ -15,7 +15,7 @@
 // 
 // Revision:
 // Revision 0.01 - File Created
-// Additional Comments:
+// Additional Comments:MODU£ ZAIMPORTOWANY Z MOJEGO CWICZENIA NR 6 - UEC2
 // 
 //////////////////////////////////////////////////////////////////////////////////
 
@@ -250,7 +250,7 @@ module draw_rect_char
      );
      defparam delay_vsync.WIDTH = 1;
      defparam delay_vsync.CLK_DEL = CLK_DELAY;
-         
+ /*        
      delay delay_vblnk (
          .clk(clk),
          .din(vblnk_in),
@@ -268,7 +268,7 @@ module draw_rect_char
           );         
     defparam delay_hblnk.WIDTH = 1;
     defparam delay_hblnk.CLK_DEL = CLK_DELAY;
-    
+  */  
     delay delay_vcount (
          .clk(clk),
          .din(vcount_in),

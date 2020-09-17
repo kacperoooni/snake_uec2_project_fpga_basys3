@@ -29,19 +29,18 @@ module rect_controller(
     input wire clk,
 		input wire [7:0] key,
 		input wire rst,
-		input wire turbo_button,
 		input wire [7:0] r_data,
 		input wire menu_interrupt, game_start,
 		input wire [1:0] difficulty_level_in,
-		input wire game_restart,
+		input wire game_restart
 		
 		
 	
 	//DEBUG
-		output reg [3:0] an,  // enable 1-out-of-4 asserted low
-    output reg [6:0] sseg, // led segments
-		input wire [4:0] debug_keys,
-		input wire [15:0] iterator_debug 
+	//	output reg [3:0] an,  // enable 1-out-of-4 asserted low
+  //  output reg [6:0] sseg, // led segments
+	//	input wire [4:0] debug_keys,
+	//	input wire [15:0] iterator_debug 
 	
 	
     );
@@ -203,14 +202,12 @@ module rect_controller(
 									snake_register_nxt[0] = {snake_register[0][31:16]-16'd1,snake_register[0][15:0]-16'd1};
 								end
 								default: begin end
-								//TO DO DIAGONALS
 							endcase
 						end
 
 					SNAKE_DRAWING:
 						begin
-							if (turbo_button == 1 && snake_moving_iterator == SNAKE_TURBO) state_nxt = SNAKE_MOVING;
-							else if(snake_moving_iterator == snake_speed)	state_nxt = SNAKE_MOVING;
+							if(snake_moving_iterator == snake_speed)	state_nxt = SNAKE_MOVING;
 							else if(menu_interrupt == 1) state_nxt = MENU_INTERRUPT;
 							else state_nxt = SNAKE_DRAWING;
 
@@ -298,8 +295,8 @@ module rect_controller(
 						end
 					MENU_INTERRUPT:
 						begin
-							if(menu_interrupt == 1) state_nxt = MENU_INTERRUPT;
-							else state_nxt = SNAKE_DRAWING;
+							if(menu_interrupt == 0)state_nxt = SNAKE_DRAWING;
+							else state_nxt = MENU_INTERRUPT;
 							snake_moving_iterator_nxt = snake_moving_iterator;
 						end			
 				endcase
@@ -336,7 +333,7 @@ genvar X;
 	endgenerate	 
 	
 	
-	
+	/*
      //DEBUG DISPLAY
 	reg [3:0] hex3, hex2, hex1, hex0;  // hex digits
     wire [3:0] dp_in;             // 4 decimal points
@@ -461,5 +458,5 @@ genvar X;
 	 
     
     
-   
+   */
 endmodule

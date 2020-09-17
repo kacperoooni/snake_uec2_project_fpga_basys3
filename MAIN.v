@@ -28,21 +28,20 @@ module MAIN(
     output wire [3:0] b,
     output wire vsync,
     output wire hsync,
-	//	input wire [3:0] key,
+//	input wire [3:0] key,
 		input wire rx,
-		output wire tx,
+		output wire tx
 		//debug
-	input wire [4:0] sw,
-	output wire [6:0] sseg,
-	output wire [3:0] an,
-	output wire [7:0] led
+//  input wire [4:0] sw,
+//	output wire [6:0] sseg,
+//	output wire [3:0] an,
+//	output wire [7:0] led
     );
-    wire clk_100Mhz, clk_65Mhz;
+    wire clk_65Mhz;
     
     
     clk_wiz_0 clk_wiz_0 (
       .clk_in1(clk),
-      .clk_100Mhz(clk_100Mhz),
       .clk_65Mhz(clk_65Mhz)
     //  .reset(rst)
       );
@@ -68,7 +67,7 @@ module MAIN(
      wire [11:0] rgb_RGB_to_grid;
      wire hsync_rgb_controller_grid_register,vsync_rgb_controller_grid_register;
      
-    VGA_rgb_controller VGA_rgb_controller (
+    VGA_background_controller VGA_background_controller (
        .clk(clk_65Mhz),
        .hcount_in(hcount_wire),
        .hsync_in(hsync_wire),
@@ -106,7 +105,7 @@ module MAIN(
 		wire [11:0] rgb_score_to_game_over;
 		wire hsync_score_to_game_over,vsync_score_to_game_over;
 		wire menu_interrupt_menu_to_rect;
-		wire [15:0] iterator_debug;
+	//	wire [15:0] iterator_debug;
 		wire [1:0] difficulty_level;
 		wire [11:0] snake_color;
 		wire [15:0] vcount_game_over_to_intro, hcount_game_over_to_intro;
@@ -142,18 +141,17 @@ module MAIN(
        .rect_read_out(rect_read),
 	     .rst(rst),
 	     .rect_read_in(rect_read_function_wire),
-	     .turbo_button(turbo_button),
 	     .score_out(score),
 	     .game_start(game_start),
 	     .menu_interrupt(menu_interrupt_menu_to_rect),
 	     .game_over(game_over),
 	     .game_restart(game_restart),
 	   //debug
-	     .debug_keys(sw),
-	     .sseg(sseg),
-	     .an(an),
-	     .r_data(r_data_debug),
-	     .iterator_debug(iterator_debug),
+	   //  .debug_keys(sw),
+	   //  .sseg(sseg),
+	   //  .an(an),
+	   //  .r_data(r_data_debug),
+	   //  .iterator_debug(iterator_debug),
 	     .difficulty_level_in(difficulty_level)
        );  
        
@@ -189,8 +187,7 @@ module MAIN(
 	    .clk(clk_65Mhz),
 	    .rst(rst),
 	  	.word_in(keydata_key_debouncer_to_keyboard_driver),
-	    .key(key),
-	    .turbo_button(turbo_button)
+	    .key(key)
     );   
        
      
@@ -277,7 +274,7 @@ module MAIN(
   			.vsync_out(vsync),
   			.hsync_out(hsync),
   			.menu_interrupt_out(menu_interrupt_menu_to_rect),
-  			.iterator_debug(iterator_debug),
+  	//		.iterator_debug(iterator_debug),
   			.game_start(game_start),
   			.difficulty_level(difficulty_level),
   			.snake_color(snake_color)	

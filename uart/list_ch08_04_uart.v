@@ -1,4 +1,9 @@
 //Listing 8.4
+
+
+
+
+//MODUL ZAIMPORTOWANY Z CWICZENIA NR 6 - UEC2
 module uart
    #( // Default setting:
       // 9.600 baud, 8 data bits, 1 stop bit, 2^2 FIFO
